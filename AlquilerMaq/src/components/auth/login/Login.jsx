@@ -1,19 +1,34 @@
 import { useState, useRef } from "react";
-import { Button, Card, Form, Row, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
 import "./Login.css";
 
-const Login = () => {
+const Login = ({ setUser, onLogin }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
     username: false,
     password: false,
+    exist: false,
+    notFunction: false,
   });
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    setErrors((prev) => ({ ...prev, username: false }));
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setErrors((prev) => ({ ...prev, password: false }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     setErrors({
       username: false,
       password: false,
@@ -21,102 +36,107 @@ const Login = () => {
       notFunction: false,
     });
 
-    if (!passwordRef.current.value && !usernameRef.current.value) {
+    if (!usernameRef.current.value && !passwordRef.current.value) {
       usernameRef.current.focus();
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: true,
+      setErrors((prev) => ({
+        ...prev,
         username: true,
+        password: true,
       }));
       return;
     }
     if (!usernameRef.current.value) {
       usernameRef.current.focus();
-      setErrors((prevErrors) => ({ ...prevErrors, username: true }));
+      setErrors((prev) => ({ ...prev, username: true }));
       return;
     }
-    if (!passwordRef.current.value) {
+    if (!passwordRef.current.value || password.length < 7) {
       passwordRef.current.focus();
-      setErrors((prevErrors) => ({ ...prevErrors, password: true }));
+      setErrors((prev) => ({ ...prev, password: true }));
       return;
     }
 
-    alert("Login exitoso");
+    // Lógica de roles
+    let role = "customer";
+    if (username.toLowerCase() === "admin") {
+      role = "admin";
+    } else if (username.toLowerCase() === "sysadmin") {
+      role = "sysadmin";
+    }
+
+    if (setUser) setUser({ name: username, role });
+    if (onLogin) onLogin();
+
     setUsername("");
     setPassword("");
-    setErrors((prevErrors) => ({ ...prevErrors, exist: false }));
+    navigate("/main");
   };
 
   return (
-    <Card className="form-card">
-      <h1>Iniciar Sesión</h1>
-      <Form>
-        <Row className="mb-3">
-          <Form.Group controlId="validationCustom01">
+    <Card className="mt-5 mx-3 p-3 px-5 shadow form-card display-flex flex-column align-items-center">
+      <Card.Body>
+        <Row className="mb-2">
+          <h5>¡Bienvenidos a AlquiMaq S.R.L!</h5>
+        </Row>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup className="mb-4">
             <Form.Label>Usuario</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Ingrese el usuario..."
+              placeholder="Ingresar usuario"
               ref={usernameRef}
               value={username}
-              onChange={(e) => {
-                setErrors((prev) => ({ ...prev, username: false }));
-                setUsername(e.target.value);
-              }}
-              className={errors.username && "is-invalid"}
+              onChange={handleUsernameChange}
+              className={errors.username ? "border border-danger" : ""}
+              required
             />
             {errors.username && (
               <Alert variant="danger" className="mt-2">
-                El usuario es requerido.
+                El campo usuario es obligatorio
               </Alert>
             )}
-          </Form.Group>
-        </Row>
-
-        <Row className="mb-3">
-          <Form.Group controlId="validationCustom02">
+          </FormGroup>
+          <FormGroup className="mb-4">
             <Form.Label>Contraseña</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Ingrese la contraseña..."
+              placeholder="Ingresar contraseña"
               ref={passwordRef}
               value={password}
-              onChange={(e) => {
-                setErrors((prev) => ({ ...prev, password: false }));
-                setPassword(e.target.value);
-              }}
-              className={errors.password && "is-invalid"}
+              onChange={handlePasswordChange}
+              className={errors.password ? "border border-danger" : ""}
+              required
             />
             {errors.password && (
               <Alert variant="danger" className="mt-2">
-                La contraseña es requerida.
+                La contraseña es incorrecta (mínimo 7 caracteres)
               </Alert>
             )}
-          </Form.Group>
-        </Row>
-
-        {errors.exist && (
-          <Alert variant="danger" className="mt-3">
-            El usuario o la contraseña es incorrecto.
-          </Alert>
-        )}
-        {errors.notFunction && (
-          <Alert variant="danger" className="mt-3">
-            Error al iniciar sesión. Inténtalo de nuevo más tarde.
-          </Alert>
-        )}
-
-        <Row className="mb-3">
-          <Button type="button" onClick={handleSubmit} className="btn-submit">
-            Iniciar Sesión
-          </Button>
-        </Row>
-        <Row>
-          <Button type="button" className="btn-secondary">
-            Registrarse
-          </Button>
-        </Row>
-      </Form>
+          </FormGroup>
+          {errors.exist && (
+            <Alert variant="danger" className="mt-3">
+              El usuario o la contraseña es incorrecto.
+            </Alert>
+          )}
+          {errors.notFunction && (
+            <Alert variant="danger" className="mt-3">
+              Error al iniciar sesión. Inténtalo de nuevo más tarde.
+            </Alert>
+          )}
+          <div className="d-flex justify-content-between mt-3 gap-2">
+            <Button
+              variant="outline-secondary"
+              type="button"
+              onClick={() => navigate("/register")}
+            >
+              Registrarse
+            </Button>
+            <Button variant="secondary" type="submit">
+              Iniciar sesión
+            </Button>
+          </div>
+        </Form>
+      </Card.Body>
     </Card>
   );
 };
