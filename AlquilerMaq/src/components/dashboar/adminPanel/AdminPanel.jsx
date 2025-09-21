@@ -1,5 +1,5 @@
 import React from "react";
-import UserManagement from "../UserManagement/UserManagement";
+import UserManagement from "../../UserManagement/UserManagement";
 
 const AdminPanel = ({ user }) => {
   return (
