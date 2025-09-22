@@ -10,10 +10,12 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/auth/login/Login";
 
-import MainScreen from "./components/dashboar/Mainscren";
-import NotFound from "./components/dashboar/NotFound";
-import AdminPanel from "./components/dashboar/AdminPanel";
-
+import MainScreen from "./components/dashboar/mainscren/Mainscren";
+import NotFound from "./components/dashboar/notFound/NotFound";
+import AdminPanel from "./components/dashboar/adminPanel/AdminPanel";
+import UserRegister from "./components/auth/userRegister/UserRegister";
+import MainLayout from "./components/layout/mainLayout/MainLayout";
+import MyRequests from "./components/myRequests/MyRequests";
 function App() {
   const ProtectedRoute = ({ isSignedIn }) => {
     if (!isSignedIn) {
@@ -41,21 +43,36 @@ function App() {
             path="/login"
             element={<Login onLogin={handleLogIn} setUser={setUser} />}
           />
+          <Route path="/register" element={<UserRegister />} />
           <Route element={<ProtectedRoute isSignedIn={loggedIn} />}>
             <Route
               path="/main"
               element={
-                <MainScreen
-                  user={user}
-                  setUser={setUser}
-                  logOut={handleLogOut}
-                />
+                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
+                  <MainScreen user={user} />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/mis-solicitudes"
+              element={
+                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
+                  <MyRequests />
+                </MainLayout>
               }
             />
             {user?.role === "sysadmin" && (
               <Route
                 path="/panel-de-control"
-                element={<AdminPanel user={user} />}
+                element={
+                  <MainLayout
+                    user={user}
+                    setUser={setUser}
+                    logOut={handleLogOut}
+                  >
+                    <AdminPanel user={user} />
+                  </MainLayout>
+                }
               />
             )}
           </Route>

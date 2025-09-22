@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 const UserRegister = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +11,7 @@ const UserRegister = () => {
     password: "",
     email: "",
   });
-
+  const navigate = useNavigate();
   const emailRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
@@ -130,8 +130,15 @@ const UserRegister = () => {
             <p>{errors.password}</p>
           </Form.Group>
 
-          <Button variant="secondary" type="submit">
+          <Button variant="secondary" type="button">
             Registrarse
+          </Button>
+          <Button
+            type="submit"
+            variant="outline-secondary"
+            onClick={() => navigate("/login")}
+          >
+            Iniciar sesión
           </Button>
         </Form>
       </Card.Body>
