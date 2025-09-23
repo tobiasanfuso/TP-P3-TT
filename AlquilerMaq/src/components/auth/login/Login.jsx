@@ -74,76 +74,74 @@ const Login = ({ setUser, onLogin }) => {
 
   return (
     <div className="login-page">
-    <Card className="login-card shadow-lg mx-auto">
-      <Card.Body className="p-4 p-md-5">
-        <Row className="mb-3 text-center">
-          <h4 className="login-title mb-1">
-          ¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!
-          </h4>
-          <p className="text-muted mb-0">Ingresá con tu cuenta</p>
-        </Row>
+      <Card className="login-card shadow-lg mx-auto">
+        <Card.Body className="p-4 p-md-5">
+          <Row className="mb-3 text-center">
+            <h4 className="login-title mb-1">
+              ¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!
+            </h4>
+            <p className="text-muted mb-0">Ingresá con tu cuenta</p>
+          </Row>
 
-        <Form onSubmit={handleSubmit}>
-          <FormGroup className="mb-4">
-            <Form.Label>Usuario</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingresar usuario"
-              ref={usernameRef}
-              value={username}
-              onChange={handleUsernameChange}
-              className={errors.username ? "border border-danger" : ""}
-              required
-            />
-            {errors.username && (
-              <Alert variant="danger" className="mt-2">
-                El campo usuario es obligatorio
+          <Form onSubmit={handleSubmit}>
+            <FormGroup className="mb-4">
+              <Form.Label>Usuario</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingresar usuario"
+                ref={usernameRef}
+                value={username}
+                onChange={handleUsernameChange}
+                className={errors.username ? "border border-danger" : ""}
+              />
+              {errors.username && (
+                <Alert variant="danger" className="mt-2">
+                  El campo usuario es obligatorio
+                </Alert>
+              )}
+            </FormGroup>
+
+            <FormGroup className="mb-4">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Ingresar contraseña"
+                ref={passwordRef}
+                value={password}
+                onChange={handlePasswordChange}
+                className={errors.password ? "border border-danger" : ""}
+              />
+              {errors.password && (
+                <Alert variant="danger" className="mt-2">
+                  La contraseña es incorrecta (mínimo 7 caracteres)
+                </Alert>
+              )}
+            </FormGroup>
+            {errors.exist && (
+              <Alert variant="danger" className="mt-3">
+                El usuario o la contraseña es incorrecto.
               </Alert>
             )}
-          </FormGroup>
-          
-          <FormGroup className="mb-4">
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Ingresar contraseña"
-              ref={passwordRef}
-              value={password}
-              onChange={handlePasswordChange}
-              className={errors.password ? "border border-danger" : ""}
-              required
-            />
-            {errors.password && (
-              <Alert variant="danger" className="mt-2">
-                La contraseña es incorrecta (mínimo 7 caracteres)
+            {errors.notFunction && (
+              <Alert variant="danger" className="mt-3">
+                Error al iniciar sesión. Inténtalo de nuevo más tarde.
               </Alert>
             )}
-          </FormGroup>
-          {errors.exist && (
-            <Alert variant="danger" className="mt-3">
-              El usuario o la contraseña es incorrecto.
-            </Alert>
-          )}
-          {errors.notFunction && (
-            <Alert variant="danger" className="mt-3">
-              Error al iniciar sesión. Inténtalo de nuevo más tarde.
-            </Alert>
-          )}
-          <div className="d-flex justify-content-between mt-3 gap-2">
-            <Button
-              variant="outline-secondary"
-              type="button"
-              onClick={() => navigate("/register")}
-            >
-              Registrarse
-            </Button>
-            <Button variant="secondary" type="submit">
-              Iniciar sesión
-            </Button>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card>
+            <div className="d-flex justify-content-between mt-3 gap-2">
+              <Button
+                variant="outline-secondary"
+                type="button"
+                onClick={() => navigate("/register")}
+              >
+                Registrarse
+              </Button>
+              <Button variant="secondary" type="submit">
+                Iniciar sesión
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 };
