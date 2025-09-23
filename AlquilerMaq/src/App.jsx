@@ -71,7 +71,7 @@ function App() {
                 </MainLayout>
               }
             />
-            {user?.role === "sysadmin" && (
+            {(user?.role === "sysadmin" || user?.role === "admin") && (
               <Route
                 path="/panel-de-control"
                 element={
@@ -86,6 +86,7 @@ function App() {
               />
             )}
           </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

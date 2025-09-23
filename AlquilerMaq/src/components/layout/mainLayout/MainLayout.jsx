@@ -39,8 +39,8 @@ const MainLayout = ({ user, setUser, logOut, children }) => {
                   </Nav.Link>
                 </>
               )}
-              {(currentRole === "admin" || currentRole === "sysadmin") && (
-                <Nav.Link onClick={() => navigate("/gestion-usuarios")}>
+              {currentRole === "admin" && (
+                <Nav.Link onClick={() => navigate("/panel-de-control")}>
                   Gestión de usuarios
                 </Nav.Link>
               )}
