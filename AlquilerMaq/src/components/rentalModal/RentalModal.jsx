@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./RentalModal.css"
 
 const RentalRequestModal = ({ product, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,11 @@ const RentalRequestModal = ({ product, onClose, onSubmit }) => {
     email: "",
     telefono: "",
   });
+
+    useEffect(() => {
+    if (product) document.body.classList.add("modal-open");
+    return () => document.body.classList.remove("modal-open");
+  }, [product]);
 
   const [submitted, setSubmitted] = useState(false);
 
@@ -25,9 +31,9 @@ const RentalRequestModal = ({ product, onClose, onSubmit }) => {
 
   return (
     <>
-      <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
+      <div className="modal fade show d-block custom-modal" tabIndex="-1" role="dialog">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content shadow-lg">
             <div className="modal-header">
               <h5 className="modal-title">
                 Solicitud de Alquiler - {product.title}

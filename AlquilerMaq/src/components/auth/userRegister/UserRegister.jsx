@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import './UserRegister.css';
+
 const UserRegister = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -89,12 +91,15 @@ const UserRegister = () => {
   };
 
   return (
-    <Card>
-      <Card.Body>
-        <h5>¡Bienvenido a AlquiMaq S.R.L!</h5>
-
+    <div className="register-page">
+    <Card className="register-card shadow-lg mx-auto">
+      <Card.Body className="p-4 p-md-5">
+      <Row className="mb-3 text-center">
+        <h5 className="register-title mb-1">¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!</h5>
+        <p className="text-muted mb-0">Registrá tu cuenta</p>
+        </Row>  
         <Form onSubmit={handleSubmit}>
-          <Form.Group>
+          <Form.Group className="mv-4">
             <Form.Control
               type="text"
               placeholder="Ingrese email"
@@ -106,7 +111,7 @@ const UserRegister = () => {
             <p className="">{errors.email}</p>
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="mb-4">
             <Form.Control
               type="text"
               placeholder="Ingrese nombre de usuario"
@@ -118,7 +123,7 @@ const UserRegister = () => {
             <p>{errors.username}</p>
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="form-label">
             <Form.Control
               type="password"
               placeholder="Ingrese contraseña"
@@ -129,20 +134,23 @@ const UserRegister = () => {
             />
             <p>{errors.password}</p>
           </Form.Group>
-
+          
+          <div className="d-flex justify-content-between mt-3 gap-2">
           <Button variant="secondary" type="button">
             Registrarse
           </Button>
+          
           <Button
             type="submit"
             variant="outline-secondary"
-            onClick={() => navigate("/login")}
-          >
+            onClick={() => navigate("/login")}>
             Iniciar sesión
           </Button>
+          </div>
         </Form>
       </Card.Body>
     </Card>
+    </div>
   );
 };
 

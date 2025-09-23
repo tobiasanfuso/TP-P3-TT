@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { Button, Row, Col } from "react-bootstrap";
+import './MainScreen.css';
 
 import NewProduct from "../../Newproduct/NewProduct";
 import ProductCard from "../../ProductCard/ProductCard";
@@ -61,14 +62,21 @@ const MainScreen = ({ user }) => {
 
   return (
     <>
-      <h2>Bienvenido {user.name} a AlquiMaq S.R.L</h2>
-      <p>Esta es la pantalla principal del sistema.</p>
+      <section className = "page-hero mb-4">
+      <h2 className="page-title">
+        Bienvenido <span className="text-brand"> {user.name} </span> a AlquiMaq S.R.L
+        </h2>
+      <p className="page-subtitle">Esta es la pantalla principal del sistema.</p>
 
       {(user.role === "admin" || user.role === "sysadmin") && (
+        <div className="page-actions">
         <Button variant="success" onClick={() => setIsModalOpen(true)}>
           Agregar Producto
         </Button>
+        </div>
       )}
+
+      </section>
 
       {isModalOpen && (
         <NewProduct
@@ -77,7 +85,7 @@ const MainScreen = ({ user }) => {
         />
       )}
 
-      <Row className="mt-3">
+      <Row className="g-4 products-grid">
         {products.map((product) => (
           <Col xs={12} sm={6} md={4} key={product.id}>
             <ProductCard

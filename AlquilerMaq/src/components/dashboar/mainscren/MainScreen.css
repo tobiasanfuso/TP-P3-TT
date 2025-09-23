@@ -1,0 +1,68 @@
+:root{
+  --brand:#3067ba;         /* primario */
+  --accent:#20c997;        /* acento suave */
+  --bg-soft:#f4f6f8;       /* fondo secciones */
+  --ink:#2c3e50;           /* texto principal */
+  --line:#e9ecef;          /* bordes sutiles */
+}
+
+.page-hero{
+  background: linear-gradient(180deg,#fff, var(--bg-soft));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,.05);
+  position: relative;
+}
+
+.page-hero::before{
+  content:"";
+  position:absolute;
+  left:16px; right:16px; top:0;
+  height:4px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg,var(--brand),var(--accent));
+  opacity:.6;
+}
+
+.page-title{
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing:.3px;
+}
+
+.text-brand{ color: var(--brand); }
+
+.page-subtitle{
+  margin: .25rem 0 0;
+  color:#6c757d;
+}
+
+/* Acciones */
+.page-actions{
+  margin-top: 1rem;
+  display:flex; gap:.5rem; flex-wrap:wrap;
+}
+
+.products-grid{
+  padding-bottom: .5rem;
+}
+
+/* aparicion sutil de cards*/
+.products-grid > [class*="col-"]{
+  animation: fadeUp .35s ease both;
+}
+.products-grid > [class*="col-"]:nth-child(2){ animation-delay:.03s;}
+.products-grid > [class*="col-"]:nth-child(3){ animation-delay:.06s;}
+.products-grid > [class*="col-"]:nth-child(4){ animation-delay:.09s;}
+
+@keyframes fadeUp{
+  from{ opacity:0; transform: translateY(8px); }
+  to{ opacity:1; transform: none; }
+}
+
+@media (max-width: 576px){
+  .page-hero{ padding: 1rem; border-radius:12px; }
+  .page-hero::before{ left:12px; right:12px; }
+}
