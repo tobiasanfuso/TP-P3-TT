@@ -1,0 +1,94 @@
+.custom-modal .modal-dialog {
+  opacity: 0;
+  transform: translateY(-18px);
+  animation: modalIn 0.32s ease-out forwards;
+}
+
+@keyframes modalIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-backdrop.show {
+  background-color: rgba(0, 0, 0, 0.4);
+  animation: backdropIn 0.28s ease-out both;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ==== Look & feel sutil para que combine con tu layout ==== */
+.custom-modal .modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.custom-modal .modal-header,
+.custom-modal .modal-footer {
+  background: #f9fafb;
+  border-color: #eee;
+}
+
+.custom-modal .modal-title {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.custom-modal .btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.custom-modal .btn:active {
+  transform: translateY(1px);
+}
+
+
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  overflow: hidden;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* header */
+.modal-header {
+  border-bottom: 1px solid #eee;
+  background-color: #f9fafb;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* footer */
+.modal-footer {
+  border-top: 1px solid #eee;
+  background-color: #f9fafb;
+}
+
+/* botones */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+}
