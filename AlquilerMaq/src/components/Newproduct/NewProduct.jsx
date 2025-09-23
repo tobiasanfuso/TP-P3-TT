@@ -1,66 +1,129 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 
-const NewProduct = ({ onSave, onClose }) => {
+const NewProduct = ({ show, onSave, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    image: "",
+  });
+
+  const titleRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const imageRef = useRef(null);
+
+  const validate = () => {
+    let valid = true;
+    const newErrors = { title: "", description: "", image: "" };
+
+    if (!title.trim()) {
+      newErrors.title = "El título es obligatorio";
+      valid = false;
+    }
+    if (!description.trim()) {
+      newErrors.description = "La descripción es obligatoria";
+      valid = false;
+    }
+    if (!image.trim()) {
+      newErrors.image = "La URL de la imagen es obligatoria";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    if (!valid) {
+      if (newErrors.title) {
+        titleRef.current.focus();
+      } else if (newErrors.description) {
+        descriptionRef.current.focus();
+      } else if (newErrors.image) {
+        imageRef.current.focus();
+      }
+    }
+
+    return valid;
+  };
 
   const handleSaveProduct = () => {
-    if (title && description && image) {
+    if (validate()) {
       onSave({ title, description, image });
-      onClose();
-    } else {
-      alert("Por favor, completa todos los campos.");
+      handleCloseAndReset();
     }
   };
 
+  const handleCloseAndReset = () => {
+    setTitle("");
+    setDescription("");
+    setImage("");
+    setErrors({ title: "", description: "", image: "" });
+    onClose();
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-dialog bg-light p-4 rounded shadow-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-center mb-3">Agregar Nuevo Producto</h3>
-        <div className="mb-3">
-          <label className="form-label">Título del Producto</label>
-          <input
-            type="text"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            autoFocus
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Descripción</label>
-          <textarea
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          ></textarea>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">URL de Imagen</label>
-          <input
-            type="text"
-            className="form-control"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            required
-          />
-        </div>
-        <div className="d-flex justify-content-between">
-          <button className="btn btn-danger" onClick={onClose}>
-            Cerrar
-          </button>
-          <button className="btn btn-primary" onClick={handleSaveProduct}>
-            Guardar
-          </button>
-        </div>
-      </div>
-    </div>
+    <Modal show={show} onHide={handleCloseAndReset} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Agregar Nuevo Producto</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group className="mb-3" controlId="formTitle">
+            <Form.Label>Título del Producto</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese el título"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              isInvalid={!!errors.title}
+              ref={titleRef}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.title}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formDescription">
+            <Form.Label>Descripción</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Ingrese la descripción"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              isInvalid={!!errors.description}
+              ref={descriptionRef}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.description}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formImage">
+            <Form.Label>URL de Imagen</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese la URL de la imagen"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              isInvalid={!!errors.image}
+              ref={imageRef}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.image}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseAndReset}>
+          Cerrar
+        </Button>
+        <Button variant="primary" onClick={handleSaveProduct}>
+          Guardar
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

@@ -10,12 +10,14 @@ const MyRequests = () => {
       username: "JohnDoe",
       email: "john.doe@example.com",
       telefono: "+1 555-1234",
+      state: "pendiente",
     },
     {
       producto: "Martillo neumatico",
       username: "JaneQQ",
       email: "jane.smith@example.com",
       telefono: "+1 555-5678",
+      state: "pendiente",
     },
   ];
 
@@ -36,7 +38,7 @@ const MyRequests = () => {
             <h6 className="fw-semibold mb-1">{req.producto}</h6> 
             <small className="text-muted d-block">
             {req.username} – {req.email}  –{" "}
-            {req.telefono}
+            {req.telefono} - {req.state}
             </small>
             </div>
             <Badge bg="primary" pill>
