@@ -1,7 +1,7 @@
 import React from "react";
 import { ListGroup } from "react-bootstrap";
 
-const MyRequests = () => {
+const HistoryRequests = () => {
   // Ejemplo de datos estáticos
   const rentalRequests = [
     {
@@ -9,20 +9,20 @@ const MyRequests = () => {
       username: "JohnDoe",
       email: "john.doe@example.com",
       telefono: "+1 555-1234",
-      state: "pendiente",
+      state: "finalizada",
     },
     {
       producto: "Martillo neumatico",
       username: "JaneQQ",
       email: "jane.smith@example.com",
       telefono: "+1 555-5678",
-      state: "pendiente",
+      state: "finalizada",
     },
   ];
 
   return (
     <div>
-      <h3 className="mb-3">Mis Solicitudes</h3>
+      <h3 className="mb-3">Historial de Solicitudes</h3>
 
       {rentalRequests.length === 0 ? (
         <p>No se han realizado solicitudes aún.</p>
@@ -40,4 +40,4 @@ const MyRequests = () => {
   );
 };
 
-export default MyRequests;
+export default HistoryRequests;

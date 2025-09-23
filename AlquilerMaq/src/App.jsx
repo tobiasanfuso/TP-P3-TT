@@ -16,6 +16,7 @@ import AdminPanel from "./components/dashboar/adminPanel/AdminPanel";
 import UserRegister from "./components/auth/userRegister/UserRegister";
 import MainLayout from "./components/layout/mainLayout/MainLayout";
 import MyRequests from "./components/myRequests/MyRequests";
+import HistoryRequests from "./components/historyRequests/HistoryRequests";
 function App() {
   const ProtectedRoute = ({ isSignedIn }) => {
     if (!isSignedIn) {
@@ -58,6 +59,15 @@ function App() {
               element={
                 <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
                   <MyRequests />
+                </MainLayout>
+              }
+            />
+
+            <Route
+              path="/historial-solicitudes"
+              element={
+                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
+                  <HistoryRequests />
                 </MainLayout>
               }
             />

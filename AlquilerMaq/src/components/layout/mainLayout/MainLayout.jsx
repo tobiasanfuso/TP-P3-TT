@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import './MainLayout.css'
+import "./MainLayout.css";
 
 const MainLayout = ({ user, setUser, logOut, children }) => {
   const navigate = useNavigate();
@@ -30,15 +30,15 @@ const MainLayout = ({ user, setUser, logOut, children }) => {
               {(currentRole === "customer" ||
                 currentRole === "admin" ||
                 currentRole === "sysadmin") && (
-                  <>
-                    <Nav.Link onClick={() => navigate("/solicitar-alquiler")}>
-                      Solicitar alquiler
-                    </Nav.Link>
-                    <Nav.Link onClick={() => navigate("/mis-solicitudes")}>
-                      Mis solicitudes
-                    </Nav.Link>
-                  </>
-                )}
+                <>
+                  <Nav.Link onClick={() => navigate("/mis-solicitudes")}>
+                    Mis solicitudes
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/historial-solicitudes")}>
+                    Historial de solicitudes
+                  </Nav.Link>
+                </>
+              )}
               {(currentRole === "admin" || currentRole === "sysadmin") && (
                 <Nav.Link onClick={() => navigate("/gestion-usuarios")}>
                   Gestión de usuarios
