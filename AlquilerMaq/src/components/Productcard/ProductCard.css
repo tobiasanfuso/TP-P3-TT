@@ -1,4 +1,3 @@
-/* Borde sutil + contraste suave */
 .product-card{
   border: 1px solid var(--line, #e9ecef);  
   border-radius: 16px;
