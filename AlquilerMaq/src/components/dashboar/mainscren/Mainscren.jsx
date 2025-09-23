@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { Button, Row, Col } from "react-bootstrap";
-import './MainScreen.css';
+import "./MainScreen.css";
 
 import NewProduct from "../../Newproduct/NewProduct";
 import ProductCard from "../../ProductCard/ProductCard";
@@ -62,28 +62,28 @@ const MainScreen = ({ user }) => {
 
   return (
     <>
-      <section className = "page-hero mb-4">
-      <h2 className="page-title">
-        Bienvenido <span className="text-brand"> {user.name} </span> a AlquiMaq S.R.L
+      <section className="page-hero mb-4">
+        <h2 className="page-title">
+          Bienvenido <span className="text-brand"> {user.name} </span> a
+          AlquiMaq S.R.L
         </h2>
-      <p className="page-subtitle">Esta es la pantalla principal del sistema.</p>
+        <p className="page-subtitle">
+          Esta es la pantalla principal del sistema.
+        </p>
 
-      {(user.role === "admin" || user.role === "sysadmin") && (
-        <div className="page-actions">
-        <Button variant="success" onClick={() => setIsModalOpen(true)}>
-          Agregar Producto
-        </Button>
-        </div>
-      )}
-
+        {(user.role === "admin" || user.role === "sysadmin") && (
+          <div className="page-actions">
+            <Button variant="success" onClick={() => setIsModalOpen(true)}>
+              Agregar Producto
+            </Button>
+          </div>
+        )}
       </section>
-
-      {isModalOpen && (
-        <NewProduct
-          onSave={handleAddProduct}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+      <NewProduct
+        show={isModalOpen}
+        onSave={handleAddProduct}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <Row className="g-4 products-grid">
         {products.map((product) => (
