@@ -73,11 +73,16 @@ const Login = ({ setUser, onLogin }) => {
   };
 
   return (
-    <Card className="mt-5 mx-3 p-3 px-5 shadow form-card display-flex flex-column align-items-center">
-      <Card.Body>
-        <Row className="mb-2">
-          <h5>¡Bienvenidos a AlquiMaq S.R.L!</h5>
+    <div className="login-page">
+    <Card className="login-card shadow-lg mx-auto">
+      <Card.Body className="p-4 p-md-5">
+        <Row className="mb-3 text-center">
+          <h4 className="login-title mb-1">
+          ¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!
+          </h4>
+          <p className="text-muted mb-0">Ingresá con tu cuenta</p>
         </Row>
+
         <Form onSubmit={handleSubmit}>
           <FormGroup className="mb-4">
             <Form.Label>Usuario</Form.Label>
@@ -96,6 +101,7 @@ const Login = ({ setUser, onLogin }) => {
               </Alert>
             )}
           </FormGroup>
+          
           <FormGroup className="mb-4">
             <Form.Label>Contraseña</Form.Label>
             <Form.Control
@@ -138,6 +144,7 @@ const Login = ({ setUser, onLogin }) => {
         </Form>
       </Card.Body>
     </Card>
+    </div>
   );
 };
 
