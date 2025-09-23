@@ -1,5 +1,6 @@
 import React from "react";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Badge } from "react-bootstrap";
+import './MyRequests.css'
 
 const MyRequests = () => {
   // Ejemplo de datos estáticos
@@ -19,22 +20,33 @@ const MyRequests = () => {
   ];
 
   return (
-    <div>
-      <h3 className="mb-3">Mis Solicitudes</h3>
+    <section className="page-hero my-requests">
+      <h3 className="page-title mb-3">Mis Solicitudes</h3>
 
       {rentalRequests.length === 0 ? (
-        <p>No se han realizado solicitudes aún.</p>
+        <p className="text-muted">No se han realizado solicitudes aún.</p>
       ) : (
-        <ListGroup>
+        <ListGroup variant="flush">
           {rentalRequests.map((req, index) => (
-            <ListGroup.Item key={index}>
-              <strong>{req.producto}</strong> – {req.username} – {req.email} –{" "}
-              {req.telefono}
+            <ListGroup.Item 
+            key={index}
+            className="request-item d-flex justify-content-between align-items-start">
+
+            <div>
+            <h6 className="fw-semibold mb-1">{req.producto}</h6> 
+            <small className="text-muted d-block">
+            {req.username} – {req.email} –{" "}
+            {req.telefono}
+            </small>
+            </div>
+            <Badge bg="primary" pill>
+                #{index + 1}
+              </Badge>
             </ListGroup.Item>
           ))}
         </ListGroup>
       )}
-    </div>
+    </section>
   );
 };
 

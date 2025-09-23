@@ -1,0 +1,26 @@
+.my-requests {
+  padding: 1.5rem;
+}
+
+.my-requests .request-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: .75rem;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+
+.my-requests .request-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.my-requests .request-item h6 {
+  color: var(--ink);
+}
+
+.my-requests .request-item small {
+  font-size: .85rem;
+}
+
