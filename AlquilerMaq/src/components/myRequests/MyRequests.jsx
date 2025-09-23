@@ -26,7 +26,7 @@ const MyRequests = () => {
       {rentalRequests.length === 0 ? (
         <p className="text-muted">No se han realizado solicitudes aún.</p>
       ) : (
-        <ListGroup variant="flush">
+        <ListGroup className="requests-list">
           {rentalRequests.map((req, index) => (
             <ListGroup.Item 
             key={index}
@@ -35,7 +35,7 @@ const MyRequests = () => {
             <div>
             <h6 className="fw-semibold mb-1">{req.producto}</h6> 
             <small className="text-muted d-block">
-            {req.username} – {req.email} –{" "}
+            {req.username} – {req.email}  –{" "}
             {req.telefono}
             </small>
             </div>
