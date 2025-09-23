@@ -23,6 +23,7 @@ const UserManagement = () => {
       const data = await res.json();
       setUsers(data);
     } catch (err) {
+      console.error("Error al obtener los usuarios:", err);
       setMessage("Error al obtener los usuarios");
     } finally {
       setLoading(false);
@@ -66,6 +67,7 @@ const UserManagement = () => {
         setMessage(result.message || "Error al crear usuario");
       }
     } catch (err) {
+      console.error("Error de red al crear el usuario:", err);
       setMessage("Error de red al crear usuario");
     }
   };
@@ -88,8 +90,9 @@ const UserManagement = () => {
         setMessage(result.message || "Error al eliminar usuario");
       }
     } catch (err) {
+      console.error("Error de red al eliminar el usuario:", err);
       setMessage("Error de red al eliminar usuario");
-    }
+    } 
   };
 
   return (
