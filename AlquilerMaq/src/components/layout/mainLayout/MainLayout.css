@@ -1,0 +1,50 @@
+/* navbar */
+.navbar {
+  background: #ffffff !important;
+  border-bottom: 1px solid #eee;
+  padding: 0.8rem 1rem;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #0d6efd !important; 
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  color: #555 !important;
+  margin: 0 0.3rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.navbar .btn {
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* main */
+main {
+  padding-top: 30px;
+  padding-bottom: 40px;
+  background-color: #eaedf1;
+}
+
+/* footer  */
+.main-footer {
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem;
+  font-size: 0.9rem;
+  margin-top: auto;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.main-footer p {
+  margin: 0;
+  opacity: 0.8;
+}
