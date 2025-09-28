@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 const start = async () => {
     try {
 
-        await sequelize.sync({ alter: true }); //crea las tablas si no existen
+        await sequelize.sync(); //crea las tablas si no existen
 
         console.log('Base de datos conectadad y sincronizada');
 
