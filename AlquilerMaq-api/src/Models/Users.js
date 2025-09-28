@@ -12,16 +12,16 @@ export const Users = sequelize.define("Users", {
         allowNull: false,
         unique: true
     },
-    email:{
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
     role: {
-        type: DataTypes.ENUM("customer","admin","sysadmin"),
+        type: DataTypes.ENUM("customer", "admin", "sysadmin"),
         defaultValue: "customer",
         allowNull: false
-        
+
     },
     password: {
         type: DataTypes.STRING,
