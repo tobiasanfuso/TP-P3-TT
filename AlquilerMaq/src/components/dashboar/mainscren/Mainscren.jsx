@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Button, Row, Col } from "react-bootstrap";
+import { Button, Row, Col, Form } from "react-bootstrap";
 import "./MainScreen.css";
 
 import NewProduct from "../../Newproduct/NewProduct";
@@ -51,6 +51,22 @@ const MainScreen = ({ user }) => {
   const [rentalModalProduct, setRentalModalProduct] = useState(null);
   const [rentalRequests, setRentalRequests] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("az");
+
+  // Filtrar y ordenar productos
+  const filteredProducts = products
+    .filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOrder === "az") {
+        return a.title.localeCompare(b.title);
+      } else {
+        return b.title.localeCompare(a.title);
+      }
+    });
+
   const handleRentalRequest = (request) => {
     setRentalRequests([...rentalRequests, request]);
   };
@@ -85,8 +101,29 @@ const MainScreen = ({ user }) => {
         onClose={() => setIsModalOpen(false)}
       />
 
+      <Row>
+        <Col>
+          <Form.Control
+            type="text"
+            placeholder="Buscar producto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
+        <Col>
+          <Form.Select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            style={{ maxWidth: 150 }}
+          >
+            <option value="az">Nombre: A-Z</option>
+            <option value="za">Nombre: Z-A</option>
+          </Form.Select>
+        </Col>
+      </Row>
+
       <Row className="g-4 products-grid">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Col xs={12} sm={6} md={4} key={product.id}>
             <ProductCard
               title={product.title}
