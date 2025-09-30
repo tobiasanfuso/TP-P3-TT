@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Button, Row, Col, Form } from "react-bootstrap";
 import "./MainScreen.css";
-
+import EditProduct from "../../editProduct/EditProduct";
 import NewProduct from "../../Newproduct/NewProduct";
 import ProductCard from "../../ProductCard/ProductCard";
 import ProductModal from "../../productModal/ProductModal";
@@ -54,6 +54,13 @@ const MainScreen = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("az");
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
+
+  const handleDeleteProduct = (id) => {
+    setProducts(products.filter((product) => product.id !== id));
+  };
+
   // Filtrar y ordenar productos
   const filteredProducts = products
     .filter((product) =>
@@ -69,6 +76,19 @@ const MainScreen = ({ user }) => {
 
   const handleRentalRequest = (request) => {
     setRentalRequests([...rentalRequests, request]);
+  };
+
+  const handleEditProduct = (product) => {
+    setEditProduct(product);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEditProduct = (updatedProduct) => {
+    setProducts(
+      products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+    );
+    setIsEditModalOpen(false);
+    setEditProduct(null);
   };
 
   const handleAddProduct = (newProduct) => {
@@ -131,6 +151,9 @@ const MainScreen = ({ user }) => {
               image={product.image}
               onDetails={() => setSelectedProduct(product)}
               onRent={() => setRentalModalProduct(product)}
+              onDelete={() => handleDeleteProduct(product.id)}
+              onEdit={() => handleEditProduct(product)}
+              user={user}
             />
           </Col>
         ))}
@@ -145,6 +168,14 @@ const MainScreen = ({ user }) => {
         onClose={() => setRentalModalProduct(null)}
         onSubmit={handleRentalRequest}
       />
+      {(user.role === "admin" || user.role === "sysadmin") && (
+        <EditProduct
+          show={isEditModalOpen}
+          product={editProduct}
+          onSave={handleSaveEditProduct}
+          onClose={() => setIsEditModalOpen(false)}
+        />
+      )}
     </>
   );
 };
