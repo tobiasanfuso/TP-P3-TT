@@ -1,4 +1,5 @@
 import { Users } from "../Models/Users.js";
+import bcrypt from 'bcryptjs';
 
 //obtener todos los users
 
