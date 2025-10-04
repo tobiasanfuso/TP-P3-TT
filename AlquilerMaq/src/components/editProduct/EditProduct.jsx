@@ -5,15 +5,16 @@ const EditProduct = ({ show, product, onSave, onClose }) => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    image: "",
+    imagen: "",
   });
 
+  // Cargar datos actuales al abrir el modal
   useEffect(() => {
     if (product) {
       setForm({
-        title: product.title,
-        description: product.description,
-        image: product.image,
+        title: product.title || "",
+        description: product.description || "",
+        imagen: product.image || "",
       });
     }
   }, [product]);
@@ -23,6 +24,7 @@ const EditProduct = ({ show, product, onSave, onClose }) => {
   };
 
   const handleSubmit = () => {
+    // Combinar datos existentes con los editados
     onSave({ ...product, ...form });
   };
 
@@ -33,7 +35,7 @@ const EditProduct = ({ show, product, onSave, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
               name="title"
@@ -41,7 +43,8 @@ const EditProduct = ({ show, product, onSave, onClose }) => {
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group>
+
+          <Form.Group className="mb-3">
             <Form.Label>Descripción</Form.Label>
             <Form.Control
               name="description"
@@ -49,11 +52,12 @@ const EditProduct = ({ show, product, onSave, onClose }) => {
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group>
+
+          <Form.Group className="mb-3">
             <Form.Label>Imagen (URL)</Form.Label>
             <Form.Control
-              name="image"
-              value={form.image}
+              name="imagen" // <- corregido
+              value={form.imagen}
               onChange={handleChange}
             />
           </Form.Group>

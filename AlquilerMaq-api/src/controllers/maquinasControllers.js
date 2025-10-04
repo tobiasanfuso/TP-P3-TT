@@ -25,9 +25,9 @@ export const obtenerMaquinaPorId = async (req, res) => {
 
 // Crear máquina
 export const crearMaquina = async (req, res) => {
-    const { nombre, descripcion, precioPorDia, disponible } = req.body;
+    const { nombre, descripcion, precioPorDia, disponible, imagen } = req.body;
     try {
-        const nuevaMaquina = await Maquinas.create({ nombre, descripcion, precioPorDia, disponible });
+        const nuevaMaquina = await Maquinas.create({ nombre, descripcion, precioPorDia, disponible, imagen });
         res.status(201).json({ message: "Máquina creada correctamente", maquina: nuevaMaquina });
     } catch (error) {
         console.error("Error al crear máquina:", error);
@@ -38,7 +38,7 @@ export const crearMaquina = async (req, res) => {
 // Actualizar máquina
 export const actualizarMaquina = async (req, res) => {
     const { id } = req.params;
-    const { nombre, descripcion, precioPorDia, disponible } = req.body;
+    const { nombre, descripcion, precioPorDia, disponible, imagen } = req.body;//, imagen
     try {
         const maquina = await Maquinas.findByPk(id);
         if (!maquina) return res.status(404).json({ message: "Máquina no encontrada" });
@@ -47,6 +47,7 @@ export const actualizarMaquina = async (req, res) => {
         maquina.descripcion = descripcion ?? maquina.descripcion;
         maquina.precioPorDia = precioPorDia ?? maquina.precioPorDia;
         maquina.disponible = disponible ?? maquina.disponible;
+        maquina.imagen = imagen ?? maquina.imagen;
 
         await maquina.save();
         res.json({ message: "Máquina actualizada", maquina });

@@ -23,4 +23,9 @@ export const Maquinas = sequelize.define("Maquinas", {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
     },
+    imagen: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+
+    }
 }, { timestamps: true });
