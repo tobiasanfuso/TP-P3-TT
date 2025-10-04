@@ -4,21 +4,21 @@ import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
 import "./Login.css";
 
 const Login = ({ setUser, onLogin }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
-    username: false,
+    email: false,
     password: false,
     exist: false,
     notFunction: false,
   });
 
-  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
     setErrors((prev) => ({ ...prev, username: false }));
   };
 
@@ -27,27 +27,18 @@ const Login = ({ setUser, onLogin }) => {
     setErrors((prev) => ({ ...prev, password: false }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({
-      username: false,
+      email: false,
       password: false,
       exist: false,
       notFunction: false,
     });
 
-    if (!usernameRef.current.value && !passwordRef.current.value) {
-      usernameRef.current.focus();
-      setErrors((prev) => ({
-        ...prev,
-        username: true,
-        password: true,
-      }));
-      return;
-    }
-    if (!usernameRef.current.value) {
-      usernameRef.current.focus();
-      setErrors((prev) => ({ ...prev, username: true }));
+    if (!emailRef.current.value) {
+      emailRef.current.focus();
+      setErrors((prev) => ({ ...prev, email: true }));
       return;
     }
     if (!passwordRef.current.value || password.length < 7) {
@@ -56,20 +47,31 @@ const Login = ({ setUser, onLogin }) => {
       return;
     }
 
-    // Lógica de roles
-    let role = "customer";
-    if (username.toLowerCase() === "admin") {
-      role = "admin";
-    } else if (username.toLowerCase() === "sysadmin") {
-      role = "sysadmin";
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }), // <- usar email
+      });
+
+      if (!res.ok) {
+        setErrors((prev) => ({ ...prev, exist: true }));
+      } else {
+        const data = await res.json(); // { token, user }
+        localStorage.setItem("book-champions-token", data.token);
+        localStorage.setItem("book-champions-user", JSON.stringify(data.user));
+
+        if (setUser) setUser(data.user);
+        if (onLogin) onLogin();
+
+        setEmail("");
+        setPassword("");
+        navigate("/main");
+      }
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, notFunction: true }));
+      console.error(err.message);
     }
-
-    if (setUser) setUser({ name: username, role });
-    if (onLogin) onLogin();
-
-    setUsername("");
-    setPassword("");
-    navigate("/main");
   };
 
   return (
@@ -85,16 +87,16 @@ const Login = ({ setUser, onLogin }) => {
 
           <Form onSubmit={handleSubmit}>
             <FormGroup className="mb-4">
-              <Form.Label>Usuario</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Ingresar usuario"
-                ref={usernameRef}
-                value={username}
-                onChange={handleUsernameChange}
-                className={errors.username ? "border border-danger" : ""}
+                placeholder="Ingresar email"
+                ref={emailRef}
+                value={email}
+                onChange={handleEmailChange}
+                className={errors.email ? "border border-danger" : ""}
               />
-              {errors.username && (
+              {errors.email && (
                 <Alert variant="danger" className="mt-2">
                   El campo usuario es obligatorio
                 </Alert>

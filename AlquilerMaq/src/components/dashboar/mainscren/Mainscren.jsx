@@ -100,7 +100,7 @@ const MainScreen = ({ user }) => {
     <>
       <section className="page-hero mb-4">
         <h2 className="page-title">
-          Bienvenido <span className="text-brand"> {user.name} </span> a
+          Bienvenido <span className="text-brand"> {user.username} </span> a
           AlquiMaq S.R.L
         </h2>
         <p className="page-subtitle">

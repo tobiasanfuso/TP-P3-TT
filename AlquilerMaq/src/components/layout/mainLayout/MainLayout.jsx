@@ -5,11 +5,13 @@ import "./MainLayout.css";
 
 const MainLayout = ({ user, setUser, logOut, children }) => {
   const navigate = useNavigate();
-  const currentUser = user?.name;
+  const currentUser = user?.username;
   const currentRole = user?.role;
 
   const handleLogout = () => {
     logOut();
+    localStorage.removeItem("book-champions-token");
+    localStorage.removeItem("book-champions-user");
     navigate("/login");
     setUser(null);
   };
