@@ -13,7 +13,7 @@ const ProductCard = ({
 }) => {
   return (
     <div className="card product-card shadow-sm">
-      <img src={image} className="card-img-top product-img" alt={title} />
+      <img src={image || ""} className="card-img-top product-img" alt={title} />
       <div className="card-body text-center">
         <h6 className="text-muted mb-1">Marca</h6>
         <h5 className="card-title fw-semibold">{title}</h5>
