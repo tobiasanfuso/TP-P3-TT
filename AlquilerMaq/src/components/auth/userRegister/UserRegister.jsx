@@ -1,23 +1,27 @@
 import { useState, useRef } from "react";
-import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import { Card, Row, Button, Form, Alert, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import './UserRegister.css';
-
+import "./UserRegister.css";
+import { Eye, EyeSlash } from "react-bootstrap-icons";
 const UserRegister = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
     email: "",
+    backend: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false); // estado para contraseña
   const navigate = useNavigate();
   const emailRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
-
+  const confirmPasswordRef = useRef(null);
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     setErrors({ ...errors, email: "" });
@@ -25,17 +29,30 @@ const UserRegister = () => {
 
   const handleUsernameChange = (e) => {
     setUserName(e.target.value);
-    setErrors({ ...errors, username: "" });
+    setErrors({ ...errors, username: "", backend: "" });
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setErrors({ ...errors, password: "" });
+    setErrors({ ...errors, password: "", backend: "" });
   };
 
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    setErrors({ ...errors, confirmPassword: "", backend: "" });
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const validate = () => {
     let valid = true;
-    const newErrors = { username: "", password: "", email: "" };
+    const newErrors = {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+      backend: "",
+    };
 
     if (!email) {
       newErrors.email = "El email es obligatorio";
@@ -59,11 +76,17 @@ const UserRegister = () => {
     if (!password) {
       newErrors.password = "La contraseña es obligatoria";
       valid = false;
-    } else if (password.length < 4) {
-      newErrors.password = "Debe tener al menos 4 caracteres";
+    } else if (password.length <= 7) {
+      newErrors.password = "Debe tener al menos 7 caracteres";
       valid = false;
     }
-
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Debe confirmar la contraseña";
+      valid = false;
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden";
+      valid = false;
+    }
     setErrors(newErrors);
 
     if (!valid) {
@@ -73,83 +96,145 @@ const UserRegister = () => {
         usernameRef.current.focus();
       } else if (newErrors.password) {
         passwordRef.current.focus();
+      } else if (newErrors.confirmPassword) {
+        confirmPasswordRef.current.focus();
       }
     }
 
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
+    if (!validate()) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password, role: "customer" }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        setErrors((prev) => ({ ...prev, backend: errData.message }));
+        return;
+      }
+
+      alert("Registro exitoso! Ahora puede iniciar sesión.");
       setEmail("");
       setUserName("");
       setPassword("");
-      setErrors({ username: "", password: "", email: "" });
-      alert("Registro exitoso de " + username);
+      setConfirmPassword("");
+      setErrors({
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        backend: "",
+      });
+      navigate("/login");
+    } catch (err) {
+      setErrors((prev) => ({
+        ...prev,
+        backend: "Error en el servidor, intente más tarde",
+      }));
+      console.error(err);
     }
   };
 
   return (
     <div className="register-page">
-    <Card className="register-card shadow-lg mx-auto">
-      <Card.Body className="p-4 p-md-5">
-      <Row className="mb-3 text-center">
-        <h5 className="register-title mb-1">¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!</h5>
-        <p className="text-muted mb-0">Registrá tu cuenta</p>
-        </Row>  
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mv-4">
-            <Form.Control
-              type="text"
-              placeholder="Ingrese email"
-              ref={emailRef}
-              onChange={handleEmailChange}
-              value={email}
-              className={errors.email}
-            />
-            <p className="">{errors.email}</p>
-          </Form.Group>
+      <Card className="register-card shadow-lg mx-auto">
+        <Card.Body className="p-4 p-md-5">
+          <Row className="mb-3 text-center">
+            <h5 className="register-title mb-1">
+              ¡Bienvenido a <span className="text-brand">AlquiMaq S.R.L</span>!
+            </h5>
+            <p className="text-muted mb-0">Registrá tu cuenta</p>
+          </Row>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-4">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese email"
+                ref={emailRef}
+                onChange={handleEmailChange}
+                value={email}
+                className={errors.email && "is-invalid"}
+              />
+              {errors.email && <p className="text-danger">{errors.email}</p>}
+            </Form.Group>
 
-          <Form.Group className="mb-4">
-            <Form.Control
-              type="text"
-              placeholder="Ingrese nombre de usuario"
-              ref={usernameRef}
-              onChange={handleUsernameChange}
-              value={username}
-              className={errors.username}
-            />
-            <p>{errors.username}</p>
-          </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label>Nombre de Usuario</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese nombre de usuario"
+                ref={usernameRef}
+                onChange={handleUsernameChange}
+                value={username}
+                className={errors.username && "is-invalid"}
+              />
+              {errors.username && (
+                <p className="text-danger">{errors.username}</p>
+              )}
+            </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label>Contraseña</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Ingrese contraseña"
+                  ref={passwordRef}
+                  onChange={handlePasswordChange}
+                  value={password}
+                  className={errors.password && "is-invalid"}
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={togglePasswordVisibility}
+                  type="button"
+                >
+                  {showPassword ? <EyeSlash /> : <Eye />}
+                </Button>
+              </InputGroup>
+              {errors.password && (
+                <p className="text-danger">{errors.password}</p>
+              )}
+            </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label>Confirmar Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Repita la contraseña"
+                ref={confirmPasswordRef}
+                onChange={handleConfirmPasswordChange}
+                value={confirmPassword}
+                className={errors.confirmPassword && "is-invalid"}
+              />
+              {errors.confirmPassword && (
+                <p className="text-danger">{errors.confirmPassword}</p>
+              )}
+            </Form.Group>
+            {errors.backend && <Alert variant="danger">{errors.backend}</Alert>}
+            <div className="d-flex justify-content-between mt-3 gap-2">
+              <Button variant="secondary" type="submit">
+                Registrarse
+              </Button>
 
-          <Form.Group className="form-label">
-            <Form.Control
-              type="password"
-              placeholder="Ingrese contraseña"
-              ref={passwordRef}
-              onChange={handlePasswordChange}
-              value={password}
-              className={errors.password}
-            />
-            <p>{errors.password}</p>
-          </Form.Group>
-          
-          <div className="d-flex justify-content-between mt-3 gap-2">
-          <Button variant="secondary" type="button">
-            Registrarse
-          </Button>
-          
-          <Button
-            type="submit"
-            variant="outline-secondary"
-            onClick={() => navigate("/login")}>
-            Iniciar sesión
-          </Button>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card>
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={() => navigate("/login")}
+              >
+                Iniciar sesión
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 };

@@ -26,7 +26,8 @@ function App() {
   };
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-
+  console.log("----USER");
+  console.log(user);
   const handleLogIn = () => {
     setLoggedIn(true);
   };

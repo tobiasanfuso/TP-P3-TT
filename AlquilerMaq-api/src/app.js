@@ -8,13 +8,13 @@ import solicitudesRoutes from "./routes/solicitudesRoutes.js";
 
 import cors from 'cors';
 
-const appApi = express();
-appApi.use(cors());
-appApi.use(express.json());
-appApi.use('/api/auth', authRoutes);
-appApi.use('/api', rolesRoutes);
-appApi.use('/api/users', usersRoutes);
-appApi.use("/api/maquinas", maquinasRoutes);
-appApi.use("/api/solicitudes", solicitudesRoutes);
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use('/api/auth', authRoutes);
+app.use('/api', rolesRoutes);
+app.use('/api/users', usersRoutes);
+app.use("/api/maquinas", maquinasRoutes);
+app.use("/api/solicitudes", solicitudesRoutes);
 
-export default appApi;
+export default app;

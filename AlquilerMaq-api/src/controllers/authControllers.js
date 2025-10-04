@@ -1,7 +1,8 @@
 import { Users } from '../Models/Users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import dotenv from "dotenv";
+dotenv.config();
 export const register = async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -37,7 +38,7 @@ export const register = async (req, res) => {
 
 };
 
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.REACT_APP_JWT_SECRET;
 
 //login
 
