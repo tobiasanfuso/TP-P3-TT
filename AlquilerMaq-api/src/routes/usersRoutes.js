@@ -6,13 +6,13 @@ import { getAllUsers, getUserById, updateUser, deleteUser, createUser } from "..
 
 const router = express.Router();
 
-router.use(verifyToken, checkRole('sysadmin'));
+// router.use(verifyToken, checkRole('sysadmin'));
 
-router.get('/', getAllUsers);
-router.get('/:id', getUserById);
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser);
-router.post('/', createUser);
+router.get('/', verifyToken, checkRole("admin", 'sysadmin'), getAllUsers);
+router.get('/:id', verifyToken, checkRole('sysadmin'), getUserById);
+router.put('/:id', verifyToken, checkRole('sysadmin'), updateUser);
+router.delete('/:id', verifyToken, checkRole('sysadmin'), deleteUser);
+router.post('/', verifyToken, checkRole('sysadmin'), createUser);
 //router.post('/', register);
 
 export default router;

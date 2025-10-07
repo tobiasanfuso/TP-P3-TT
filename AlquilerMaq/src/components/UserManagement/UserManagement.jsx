@@ -90,7 +90,7 @@ const UserManagement = ({ user }) => {
         if (!res.ok) return res.json().then((data) => Promise.reject(data));
         return res.json();
       })
-      .then((data) => {
+      .then(() => {
         setFormUser({
           username: "",
           email: "",
@@ -106,9 +106,23 @@ const UserManagement = ({ user }) => {
   };
 
   const handleDelete = (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
-    setUsers(users.filter((u) => u.id !== id));
-    setMessage("Usuario eliminado");
+    fetch(`http://localhost:5000/api/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("book-champions-token")}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) return res.json().then((data) => Promise.reject(data));
+        return res.json();
+      })
+      .then(() => {
+        setReload((prev) => prev + 1); // recargar la lista de usuarios
+      })
+      .catch((err) => {
+        setMessage(err.message || "Error al eliminar usuario");
+      });
   };
 
   return (
@@ -153,6 +167,7 @@ const UserManagement = ({ user }) => {
           >
             <option value="customer">customer</option>
             <option value="admin">admin</option>
+            <option value="sysadmin">sysadmin</option>
           </Form.Select>
           <Button variant="success" onClick={handleCreate}>
             Agregar
