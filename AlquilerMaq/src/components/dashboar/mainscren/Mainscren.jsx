@@ -7,6 +7,7 @@ import NewProduct from "../../Newproduct/NewProduct";
 import ProductCard from "../../ProductCard/ProductCard";
 import ProductModal from "../../productModal/ProductModal";
 import RentalModal from "../../rentalModal/RentalModal";
+import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
 const datosDePrueba = [
   {
     id: 1,
@@ -46,7 +47,7 @@ const datosDePrueba = [
 ];
 const MainScreen = ({ user }) => {
   const [products, setProducts] = useState([]);
-
+  const [updateTrigger, setUpdateTrigger] = useState(0);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -74,7 +75,7 @@ const MainScreen = ({ user }) => {
     };
 
     fetchProducts();
-  }, []);
+  }, [updateTrigger]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [rentalModalProduct, setRentalModalProduct] = useState(null);
@@ -85,9 +86,11 @@ const MainScreen = ({ user }) => {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteProduct, setDeleteProduct] = useState(null);
+  const handleDeleteProduct = (product) => {
+    setDeleteProduct(product);
+    setIsDeleteModalOpen(true);
   };
 
   // Filtrar y ordenar productos
@@ -162,6 +165,28 @@ const MainScreen = ({ user }) => {
     setProducts([...products, productWithId]);
   };
 
+  const handleCancelDelete = async () => {
+    setIsDeleteModalOpen(false);
+    setDeleteProduct(null);
+  };
+  const handleConfirmDelete = async () => {
+    try {
+      const token = localStorage.getItem("book-champions-token");
+      const res = await fetch(
+        `http://localhost:5000/api/maquinas/${deleteProduct.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!res.ok) throw new Error("No se pudo eliminar el producto");
+      setIsDeleteModalOpen(false);
+      setDeleteProduct(null);
+      setUpdateTrigger((prev) => prev + 1);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
   return (
     <>
       <section className="page-hero mb-4">
@@ -217,7 +242,7 @@ const MainScreen = ({ user }) => {
               image={product.image}
               onDetails={() => setSelectedProduct(product)}
               onRent={() => setRentalModalProduct(product)}
-              onDelete={() => handleDeleteProduct(product.id)}
+              onDelete={() => handleDeleteProduct(product)}
               onEdit={() => handleEditProduct(product)}
               user={user}
             />
@@ -235,12 +260,21 @@ const MainScreen = ({ user }) => {
         onSubmit={handleRentalRequest}
       />
       {(user.role === "admin" || user.role === "sysadmin") && (
-        <EditProduct
-          show={isEditModalOpen}
-          product={editProduct}
-          onSave={handleSaveEditProduct}
-          onClose={() => setIsEditModalOpen(false)}
-        />
+        <>
+          <EditProduct
+            show={isEditModalOpen}
+            product={editProduct}
+            onSave={handleSaveEditProduct}
+            onClose={() => setIsEditModalOpen(false)}
+          />
+          {console.log()}
+          <ConfirmDeleteModal
+            show={isDeleteModalOpen}
+            onHide={handleCancelDelete}
+            onConfirm={handleConfirmDelete}
+            product={deleteProduct?.title}
+          />
+        </>
       )}
     </>
   );
