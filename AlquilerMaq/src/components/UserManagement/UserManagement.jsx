@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Form, Table, Alert } from "react-bootstrap";
-
+import LoadingUsers from "../loadingUsers/LoadingUsers";
 const UserManagement = ({ user }) => {
   const [users, setUsers] = useState([]);
   const [reload, setReload] = useState(0);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const token = localStorage.getItem("book-champions-token");
     fetch("http://localhost:5000/api/users", {
@@ -13,7 +14,10 @@ const UserManagement = ({ user }) => {
         if (!res.ok) throw new Error("Error al cargar usuarios");
         return res.json();
       })
-      .then((data) => setUsers(data))
+      .then((data) => {
+        setUsers(data);
+        setLoading(false);
+      })
       .catch(() => setMessage("No se pudieron cargar los usuarios"));
   }, [reload]);
   const [formUser, setFormUser] = useState({
@@ -174,42 +178,46 @@ const UserManagement = ({ user }) => {
           </Button>
         </Form>
       )}
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Usuario</th>
-            <th>Email</th>
-            {user.role === "sysadmin" && (
-              <>
-                <th>Rol</th>
-                <th>Acción</th>
-              </>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.username}</td>
-              <td>{u.email}</td>
+      {loading ? (
+        <LoadingUsers role={user.role} />
+      ) : (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Email</th>
               {user.role === "sysadmin" && (
                 <>
-                  <td>{u.role}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(u.id)}
-                    >
-                      Eliminar
-                    </Button>
-                  </td>
+                  <th>Rol</th>
+                  <th>Acción</th>
                 </>
               )}
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id}>
+                <td>{u.username}</td>
+                <td>{u.email}</td>
+                {user.role === "sysadmin" && (
+                  <>
+                    <td>{u.role}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(u.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </div>
   );
 };
