@@ -137,7 +137,7 @@ const UserManagement = ({ user }) => {
             value={formUser.username}
             onChange={handleChange}
             ref={usernameRef}
-            isInvalid={!!errors.username}
+            isInvalid={errors.username}
           />
           {errors.username && <p className="text-danger">{errors.username}</p>}
           <Form.Control
@@ -147,7 +147,7 @@ const UserManagement = ({ user }) => {
             value={formUser.email}
             onChange={handleChange}
             ref={emailRef}
-            isInvalid={!!errors.email}
+            isInvalid={errors.email}
           />
           {errors.email && <p className="text-danger">{errors.email}</p>}
           <Form.Control
@@ -157,7 +157,7 @@ const UserManagement = ({ user }) => {
             value={formUser.password}
             onChange={handleChange}
             ref={passwordRef}
-            isInvalid={!!errors.password}
+            isInvalid={errors.password}
           />
           {errors.password && <p className="text-danger">{errors.password}</p>}
           <Form.Select
