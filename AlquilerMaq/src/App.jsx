@@ -1,11 +1,4 @@
-import { useState } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/auth/login/Login";
@@ -17,25 +10,11 @@ import UserRegister from "./components/auth/userRegister/UserRegister";
 import MainLayout from "./components/layout/mainLayout/MainLayout";
 import MyRequests from "./components/myRequests/MyRequests";
 import HistoryRequests from "./components/historyRequests/HistoryRequests";
+import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
+import { useContext } from "react";
+import { AuthenticationContext } from "./components/service/auth/auth.context";
 function App() {
-  const ProtectedRoute = ({ isSignedIn }) => {
-    if (!isSignedIn) {
-      return <Navigate to="/login" replace />;
-    }
-    return <Outlet />;
-  };
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  console.log("----USER");
-  console.log(user);
-  const handleLogIn = () => {
-    setLoggedIn(true);
-  };
-  const handleLogOut = () => {
-    setLoggedIn(false);
-    setUser(null);
-  };
-
+  const { user } = useContext(AuthenticationContext);
   return (
     <div className="App">
       <BrowserRouter>
@@ -43,22 +22,22 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route
             path="/login"
-            element={<Login onLogin={handleLogIn} setUser={setUser} />}
+            element={user ? <Navigate to="/main" replace /> : <Login />}
           />
           <Route path="/register" element={<UserRegister />} />
-          <Route element={<ProtectedRoute isSignedIn={loggedIn} />}>
+          <Route element={<ProtectedRoute />}>
             <Route
               path="/main"
               element={
-                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
-                  <MainScreen user={user} />
+                <MainLayout>
+                  <MainScreen />
                 </MainLayout>
               }
             />
             <Route
               path="/mis-solicitudes"
               element={
-                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
+                <MainLayout>
                   <MyRequests />
                 </MainLayout>
               }
@@ -67,7 +46,7 @@ function App() {
             <Route
               path="/historial-solicitudes"
               element={
-                <MainLayout user={user} setUser={setUser} logOut={handleLogOut}>
+                <MainLayout>
                   <HistoryRequests />
                 </MainLayout>
               }
@@ -76,12 +55,8 @@ function App() {
               <Route
                 path="/panel-de-control"
                 element={
-                  <MainLayout
-                    user={user}
-                    setUser={setUser}
-                    logOut={handleLogOut}
-                  >
-                    <AdminPanel user={user} />
+                  <MainLayout>
+                    <AdminPanel />
                   </MainLayout>
                 }
               />

@@ -9,18 +9,19 @@ import ProductModal from "../../productModal/ProductModal";
 import RentalModal from "../../rentalModal/RentalModal";
 import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
 import LoadingCard from "../../loadingCard/LoadingCard";
-
-const MainScreen = ({ user }) => {
+import { useContext } from "react";
+import { AuthenticationContext } from "../../service/auth/auth.context";
+const MainScreen = () => {
+  const { user, token } = useContext(AuthenticationContext);
   const [products, setProducts] = useState([]);
   const [updateTrigger, setUpdateTrigger] = useState(0);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/maquinas", {
+          method: "GET",
           headers: {
-            Authorization: ` Bearer ${localStorage.getItem(
-              "book-champions-token"
-            )}`,
+            Authorization: ` Bearer ${token}`,
           },
         });
         if (!res.ok) throw new Error("Error al cargar máquinas");
@@ -83,8 +84,6 @@ const MainScreen = ({ user }) => {
 
   const handleSaveEditProduct = async (updatedProduct) => {
     try {
-      const token = localStorage.getItem("book-champions-token");
-
       const res = await fetch(
         `http://localhost:5000/api/maquinas/${updatedProduct.id}`,
         {
@@ -136,7 +135,6 @@ const MainScreen = ({ user }) => {
   };
   const handleConfirmDelete = async () => {
     try {
-      const token = localStorage.getItem("book-champions-token");
       const res = await fetch(
         `http://localhost:5000/api/maquinas/${deleteProduct.id}`,
         {

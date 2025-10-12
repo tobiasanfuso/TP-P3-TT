@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Form, Table, Alert } from "react-bootstrap";
 import LoadingUsers from "../loadingUsers/LoadingUsers";
+import { useContext } from "react";
+import { AuthenticationContext } from "../service/auth/auth.context";
 const UserManagement = ({ user }) => {
+  const { token } = useContext(AuthenticationContext);
   const [users, setUsers] = useState([]);
   const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const token = localStorage.getItem("book-champions-token");
     fetch("http://localhost:5000/api/users", {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -86,7 +88,7 @@ const UserManagement = ({ user }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("book-champions-token")}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(formUser),
     })
@@ -114,7 +116,7 @@ const UserManagement = ({ user }) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("book-champions-token")}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
