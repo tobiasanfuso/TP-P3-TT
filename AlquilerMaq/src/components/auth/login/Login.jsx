@@ -2,8 +2,11 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
 import "./Login.css";
+import { useContext } from "react";
+import { AuthenticationContext } from "../../service/auth/auth.context";
 
-const Login = ({ setUser, onLogin }) => {
+const Login = () => {
+  const { handleLoginUser } = useContext(AuthenticationContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
@@ -58,12 +61,8 @@ const Login = ({ setUser, onLogin }) => {
         setErrors((prev) => ({ ...prev, exist: true }));
       } else {
         const data = await res.json(); // { token, user }
-        localStorage.setItem("book-champions-token", data.token);
-        localStorage.setItem("book-champions-user", JSON.stringify(data.user));
-
-        if (setUser) setUser(data.user);
-        if (onLogin) onLogin();
-
+        console.log("DATA LOGIN", typeof data.token);
+        handleLoginUser(data);
         setEmail("");
         setPassword("");
         navigate("/main");
