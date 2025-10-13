@@ -2,18 +2,18 @@ import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./MainLayout.css";
+import { useContext } from "react";
+import { AuthenticationContext } from "../../service/auth/auth.context";
 
-const MainLayout = ({ user, setUser, logOut, children }) => {
+const MainLayout = ({ children }) => {
   const navigate = useNavigate();
+  const { user, handleLogoutUser } = useContext(AuthenticationContext);
   const currentUser = user?.username;
   const currentRole = user?.role;
 
   const handleLogout = () => {
-    logOut();
-    localStorage.removeItem("book-champions-token");
-    localStorage.removeItem("book-champions-user");
+    handleLogoutUser();
     navigate("/login");
-    setUser(null);
   };
 
   const handleProfile = () => {
