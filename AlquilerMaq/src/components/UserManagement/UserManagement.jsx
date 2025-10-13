@@ -1,145 +1,222 @@
-import React, { useEffect, useState } from "react";
-
-const UserManagement = () => {
+import React, { useState, useEffect, useRef } from "react";
+import { Button, Form, Table, Alert } from "react-bootstrap";
+import LoadingUsers from "../loadingUsers/LoadingUsers";
+const UserManagement = ({ user }) => {
   const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
-  const [formData, setFormData] = useState({
+  const [reload, setReload] = useState(0);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const token = localStorage.getItem("book-champions-token");
+    fetch("http://localhost:5000/api/users", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al cargar usuarios");
+        return res.json();
+      })
+      .then((data) => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(() => setMessage("No se pudieron cargar los usuarios"));
+  }, [reload]);
+  const [formUser, setFormUser] = useState({
     username: "",
     email: "",
-    role: "",
+    password: "",
+    role: "customer",
   });
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+    backend: "",
+  });
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const [message, setMessage] = useState(null);
 
-  // Cargar usuarios
-  useEffect(() => {
-    fetch("http://localhost:3000/api/users", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then(setUsers)
-      .catch(console.error);
-  }, []);
-
-  // Eliminar usuario
-  const handleDelete = async (id) => {
-    await fetch(`http://localhost:3000/api/users/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    setUsers(users.filter((u) => u.id !== id));
+  const handleChange = (e) => {
+    setFormUser({ ...formUser, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "", backend: "" });
   };
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { username: "", email: "", password: "", backend: "" };
 
-  // Editar usuario
-  const handleEditClick = (u) => {
-    setEditingUser(u);
-    setFormData({ username: u.username, email: u.email, role: u.role });
+    if (!formUser.username) {
+      newErrors.username = "El nombre de usuario es obligatorio";
+      valid = false;
+    } else if (formUser.username.length < 3) {
+      newErrors.username = "Debe tener al menos 3 caracteres";
+      valid = false;
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formUser.username)) {
+      newErrors.username = "Solo se permiten letras, números y guiones bajos";
+      valid = false;
+    }
+
+    if (!formUser.email) {
+      newErrors.email = "El email es obligatorio";
+      valid = false;
+    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/i.test(formUser.email)) {
+      newErrors.email = "Ingrese un email válido";
+      valid = false;
+    }
+
+    if (!formUser.password) {
+      newErrors.password = "La contraseña es obligatoria";
+      valid = false;
+    } else if (formUser.password.length < 7) {
+      newErrors.password = "Debe tener al menos 7 caracteres";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.username) usernameRef.current.focus();
+    else if (newErrors.email) emailRef.current.focus();
+    else if (newErrors.password) passwordRef.current.focus();
+
+    return valid;
   };
-
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    await fetch(`http://localhost:3000/api/users/${editingUser.id}`, {
-      method: "PUT",
+  const handleCreate = () => {
+    if (!validateForm()) return;
+    fetch("http://localhost:5000/api/users", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("book-champions-token")}`,
       },
-      body: JSON.stringify(formData),
-    });
+      body: JSON.stringify(formUser),
+    })
+      .then((res) => {
+        if (!res.ok) return res.json().then((data) => Promise.reject(data));
+        return res.json();
+      })
+      .then(() => {
+        setFormUser({
+          username: "",
+          email: "",
+          password: "",
+          role: "customer",
+        });
+        setMessage("Usuario creado correctamente");
+        setReload((prev) => prev + 1); // recargar la lista de usuarios
+      })
+      .catch((err) => {
+        setMessage(err.message || "Error al crear usuario");
+      });
+  };
 
-    setEditingUser(null);
-    const updated = await fetch("http://localhost:3000/api/users", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }).then((res) => res.json());
-    setUsers(updated);
+  const handleDelete = (id) => {
+    fetch(`http://localhost:5000/api/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("book-champions-token")}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) return res.json().then((data) => Promise.reject(data));
+        return res.json();
+      })
+      .then(() => {
+        setReload((prev) => prev + 1); // recargar la lista de usuarios
+      })
+      .catch((err) => {
+        setMessage(err.message || "Error al eliminar usuario");
+      });
   };
 
   return (
-    <div className="container mt-3">
-      <h3>Gestión de Usuarios</h3>
-
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.id}</td>
-              <td>{u.username}</td>
-              <td>{u.email}</td>
-              <td>{u.role}</td>
-              <td>
-                <button
-                  className="btn btn-warning btn-sm"
-                  onClick={() => handleEditClick(u)}
-                >
-                  Editar
-                </button>
-                <button
-                  className="btn btn-danger btn-sm ms-2"
-                  onClick={() => handleDelete(u.id)}
-                >
-                  Eliminar
-                </button>
-              </td>
+    <div>
+      <h4 className="mt-4">Gestión de Usuarios</h4>
+      {message && <Alert variant="info">{message}</Alert>}
+      {user.role === "sysadmin" && (
+        <Form className="d-flex flex-wrap gap-2 mb-3">
+          <Form.Control
+            name="username"
+            placeholder="Usuario"
+            value={formUser.username}
+            onChange={handleChange}
+            ref={usernameRef}
+            isInvalid={errors.username}
+          />
+          {errors.username && <p className="text-danger">{errors.username}</p>}
+          <Form.Control
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formUser.email}
+            onChange={handleChange}
+            ref={emailRef}
+            isInvalid={errors.email}
+          />
+          {errors.email && <p className="text-danger">{errors.email}</p>}
+          <Form.Control
+            name="password"
+            type="password"
+            placeholder="Contraseña"
+            value={formUser.password}
+            onChange={handleChange}
+            ref={passwordRef}
+            isInvalid={errors.password}
+          />
+          {errors.password && <p className="text-danger">{errors.password}</p>}
+          <Form.Select
+            name="role"
+            value={formUser.role}
+            onChange={handleChange}
+          >
+            <option value="customer">customer</option>
+            <option value="admin">admin</option>
+            <option value="sysadmin">sysadmin</option>
+          </Form.Select>
+          <Button variant="success" onClick={handleCreate}>
+            Agregar
+          </Button>
+        </Form>
+      )}
+      {loading ? (
+        <LoadingUsers role={user.role} />
+      ) : (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Email</th>
+              {user.role === "sysadmin" && (
+                <>
+                  <th>Rol</th>
+                  <th>Acción</th>
+                </>
+              )}
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {editingUser && (
-        <div className="card p-3 mt-3">
-          <h5>Editar usuario: {editingUser.username}</h5>
-          <form onSubmit={handleEditSubmit}>
-            <input
-              className="form-control mb-2"
-              placeholder="Nombre de usuario"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-            />
-            <input
-              className="form-control mb-2"
-              placeholder="Correo electrónico"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-            />
-            <select
-              className="form-select mb-2"
-              value={formData.role}
-              onChange={(e) =>
-                setFormData({ ...formData, role: e.target.value })
-              }
-            >
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
-              <option value="sysadmin">Sysadmin</option>
-            </select>
-
-            <button className="btn btn-success me-2" type="submit">
-              Guardar cambios
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setEditingUser(null)}
-              type="button"
-            >
-              Cancelar
-            </button>
-          </form>
-        </div>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id}>
+                <td>{u.username}</td>
+                <td>{u.email}</td>
+                {user.role === "sysadmin" && (
+                  <>
+                    <td>{u.role}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(u.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       )}
     </div>
   );

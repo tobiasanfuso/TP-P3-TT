@@ -1,63 +1,128 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Button, Row, Col } from "react-bootstrap";
+import { Button, Row, Col, Form } from "react-bootstrap";
 import "./MainScreen.css";
-
+import EditProduct from "../../editProduct/EditProduct";
 import NewProduct from "../../Newproduct/NewProduct";
 import ProductCard from "../../ProductCard/ProductCard";
 import ProductModal from "../../productModal/ProductModal";
 import RentalModal from "../../rentalModal/RentalModal";
-const MainScreen = ({ user }) => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      title: "Martillo",
-      brand: "MAKITA",
-      description: "Un martillo demoledor es una herramienta eléctrica o neumática diseñada para romper materiales duros como concreto, piedra, ladrillo o mampostería mediante golpes repetitivos de alta potencia.",
-      image:
-        "https://imgs.search.brave.com/AnxguX9a4sEPITLiMWj7O5hPBn4xZmXXrr0eJtgGu68/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jbXMu/Z3J1cG9mZXJyZXBh/dC5uZXQvYXNzZXRz/L2ltZy9wcm9kdWN0/b3MvSE0xODEyXzEu/d2VicA",
-    },
-    {
-      id: 2,
-      title: "Vibropisonador",
-      brand: "WACKER",
-      description: "El vibropisón es una máquina de compactación, funciona mediante golpes repetitivos de alta energía para compactar suelos granulares, cohesivos, gravilla, arcilla o asfalto.",
-      image:
-        "https://imgs.search.brave.com/pI6_3UPtgqKnZ4CVHZ3owowSbPeY9-jszT3o-EqoNzU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZGlyZWN0aW5kdXN0/cnkuZXMvaW1hZ2Vz/X2RpL3Bob3RvLW1n/LzQxMTU2LTE3ODE1/OTI3LmpwZw",
-    },
-    {
-      id: 3,
-      title: "Amoladora",
-      brand: "MAKITA",
-      description: "Una amoladora es una herramienta eléctrica o neumática utilizada para cortar, lijar, pulir, desbastar y decapar diversos materiales como metal, madera, concreto, cerámica, piedra y plásticos.",
-      image:
-        "https://imgs.search.brave.com/LnLVvUVGB7EyvEbCt-mhiN2d4C9i8Y3dncmrbnaOi0g/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMjho/aTkzZ3I2OTdvbC5j/bG91ZGZyb250Lm5l/dC8xYWIzMjc0NS0y/NjBiLWNjODQvaW1n/L1Byb2R1Y3RvLzI4/Lzk1NjRQQ1YtMS02/Mjk5M2IyZDg2Yzkx/LmpwZWc",
-    },
-    {
-      id: 4,
-      title: "Cuerpo de Andamio",
-      brand: "SORRENTO",
-      description: "El cuerpo de andamio es la estructura principal que proporciona soporte y estabilidad a toda la estructura, actuando como la base sobre la cual se montan los elementos auxiliares.",
-      image:
-        "https://imgs.search.brave.com/S6ZIVdexpcnq_ohiKz09c92FHv5nc3uMd-nPLEmvhG4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9hY2Ru/LXVzLm1pdGllbmRh/bnViZS5jb20vc3Rv/cmVzLzk1Mi85MzYv/cHJvZHVjdHMvYW5k/YW1pby1yZWZvcnph/ZG9vbzEtMmE3ODc3/Y2RmNzYzNmM0NWQx/MTU2MDg5NTYwMzA4/NzItMjQwLTAuanBn",
-    },
-    {
-      id: 5,
-      title: "Allanadora",
-      brand: "FEMA",
-      description: "Una allanadora es una máquina utilizada principalmente para alisar y nivelar superficies de concreto, asfalto o mortero, logrando acabados lisos y uniformes.",
-      image:
-        "https://imgs.search.brave.com/YIpzjqePgFcQFLGqIPKmCm6Rs4Y1zF7MOLBmyeMBkkc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9iYXJp/a2VsbHN1ZGFtZXJp/Y2EuY29tLmFyL3dw/LWNvbnRlbnQvdXBs/b2Fkcy8yMDE5LzEx/L0FsbGFuYWRvcmFf/c2ltcGxlX0JBUklL/RUxMX2RpYW1ldHJv/MTIwY21fY2FqYUhl/YXZ5RHV0eTJfY2hp/Y28ucG5n",
-    },
-  ]);
+import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
+import LoadingCard from "../../loadingCard/LoadingCard";
 
+const MainScreen = ({ user }) => {
+  const [products, setProducts] = useState([]);
+  const [updateTrigger, setUpdateTrigger] = useState(0);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/maquinas", {
+          headers: {
+            Authorization: ` Bearer ${localStorage.getItem(
+              "book-champions-token"
+            )}`,
+          },
+        });
+        if (!res.ok) throw new Error("Error al cargar máquinas");
+        const data = await res.json();
+        setLoadingProduct(false);
+        const mappedProducts = data.map((m) => ({
+          id: m.id,
+          title: m.nombre,
+          description: m.descripcion,
+          image: m.imagen,
+        }));
+        console.log(data);
+        setProducts(mappedProducts);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+
+    fetchProducts();
+  }, [updateTrigger]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [rentalModalProduct, setRentalModalProduct] = useState(null);
   const [rentalRequests, setRentalRequests] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("az");
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteProduct, setDeleteProduct] = useState(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
+  const handleDeleteProduct = (product) => {
+    setDeleteProduct(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Filtrar y ordenar productos
+  const filteredProducts = products
+    .filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOrder === "az") {
+        return a.title.localeCompare(b.title);
+      } else {
+        return b.title.localeCompare(a.title);
+      }
+    });
+
   const handleRentalRequest = (request) => {
     setRentalRequests([...rentalRequests, request]);
+  };
+
+  const handleEditProduct = (product) => {
+    setEditProduct(product);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEditProduct = async (updatedProduct) => {
+    try {
+      const token = localStorage.getItem("book-champions-token");
+
+      const res = await fetch(
+        `http://localhost:5000/api/maquinas/${updatedProduct.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            nombre: updatedProduct.title,
+            descripcion: updatedProduct.description,
+            imagen: updatedProduct.imagen,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("No se pudo actualizar la máquina");
+
+      const data = await res.json();
+      console.log("DATA UPDATE");
+      console.log(data);
+      setProducts(
+        products.map((p) =>
+          p.id === updatedProduct.id
+            ? {
+                ...p,
+                title: data.maquina.nombre,
+                description: data.maquina.descripcion,
+                image: data.maquina.imagen,
+              }
+            : p
+        )
+      );
+
+      setIsEditModalOpen(false);
+      setEditProduct(null);
+    } catch (err) {
+      console.error("Error al actualizar máquina:", err.message);
+    }
   };
 
   const handleAddProduct = (newProduct) => {
@@ -65,11 +130,33 @@ const MainScreen = ({ user }) => {
     setProducts([...products, productWithId]);
   };
 
+  const handleCancelDelete = async () => {
+    setIsDeleteModalOpen(false);
+    setDeleteProduct(null);
+  };
+  const handleConfirmDelete = async () => {
+    try {
+      const token = localStorage.getItem("book-champions-token");
+      const res = await fetch(
+        `http://localhost:5000/api/maquinas/${deleteProduct.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!res.ok) throw new Error("No se pudo eliminar el producto");
+      setIsDeleteModalOpen(false);
+      setDeleteProduct(null);
+      setUpdateTrigger((prev) => prev + 1);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
   return (
     <>
       <section className="page-hero mb-4">
         <h2 className="page-title">
-          Bienvenido <span className="text-brand"> {user.name} </span> a
+          Bienvenido <span className="text-brand"> {user.username} </span> a
           AlquiMaq S.R.L
         </h2>
         <p className="page-subtitle">
@@ -90,21 +177,47 @@ const MainScreen = ({ user }) => {
         onClose={() => setIsModalOpen(false)}
       />
 
-      <Row className="g-4 products-grid">
-        {products.map((product) => (
-          <Col xs={12} sm={6} md={4} key={product.id}>
-            <ProductCard
-              title={product.title}
-              brand={product.brand}
-              description={product.description}
-              image={product.image}
-              onDetails={() => setSelectedProduct(product)}
-              onRent={() => setRentalModalProduct(product)}
-            />
-          </Col>
-        ))}
+      <Row>
+        <Col>
+          <Form.Control
+            type="text"
+            placeholder="Buscar producto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
+        <Col>
+          <Form.Select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            style={{ maxWidth: 150 }}
+          >
+            <option value="az">Nombre: A-Z</option>
+            <option value="za">Nombre: Z-A</option>
+          </Form.Select>
+        </Col>
       </Row>
 
+      <Row className="g-4 products-grid">
+        {loadingProduct ? (
+          <LoadingCard />
+        ) : (
+          filteredProducts.map((product) => (
+            <Col xs={12} sm={6} md={4} key={product.id}>
+              <ProductCard
+                title={product.title}
+                description={product.description}
+                image={product.image}
+                onDetails={() => setSelectedProduct(product)}
+                onRent={() => setRentalModalProduct(product)}
+                onDelete={() => handleDeleteProduct(product)}
+                onEdit={() => handleEditProduct(product)}
+                user={user}
+              />
+            </Col>
+          ))
+        )}
+      </Row>
       <ProductModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
@@ -114,6 +227,23 @@ const MainScreen = ({ user }) => {
         onClose={() => setRentalModalProduct(null)}
         onSubmit={handleRentalRequest}
       />
+      {(user.role === "admin" || user.role === "sysadmin") && (
+        <>
+          <EditProduct
+            show={isEditModalOpen}
+            product={editProduct}
+            onSave={handleSaveEditProduct}
+            onClose={() => setIsEditModalOpen(false)}
+          />
+          {console.log()}
+          <ConfirmDeleteModal
+            show={isDeleteModalOpen}
+            onHide={handleCancelDelete}
+            onConfirm={handleConfirmDelete}
+            product={deleteProduct?.title}
+          />
+        </>
+      )}
     </>
   );
 };
