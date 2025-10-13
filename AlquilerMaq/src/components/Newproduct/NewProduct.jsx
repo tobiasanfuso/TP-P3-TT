@@ -3,24 +3,31 @@ import { Modal, Button, Form } from "react-bootstrap";
 
 const NewProduct = ({ show, onSave, onClose }) => {
   const [title, setTitle] = useState("");
+  const [brand, setBrand] = useState(""); 
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [errors, setErrors] = useState({
     title: "",
+    brand: "", 
     description: "",
     image: "",
   });
 
   const titleRef = useRef(null);
+  const brandRef = useRef(null); 
   const descriptionRef = useRef(null);
   const imageRef = useRef(null);
 
   const validate = () => {
     let valid = true;
-    const newErrors = { title: "", description: "", image: "" };
+    const newErrors = { title: "", brand: "", description: "", image: "" };
 
     if (!title.trim()) {
       newErrors.title = "El título es obligatorio";
+      valid = false;
+    }
+    if (!brand.trim()) {
+      newErrors.brand = "La marca es obligatoria";
       valid = false;
     }
     if (!description.trim()) {
@@ -36,6 +43,8 @@ const NewProduct = ({ show, onSave, onClose }) => {
     if (!valid) {
       if (newErrors.title) {
         titleRef.current.focus();
+      } else if (newErrors.brand) {
+        brandRef.current.focus();
       } else if (newErrors.description) {
         descriptionRef.current.focus();
       } else if (newErrors.image) {
@@ -48,16 +57,17 @@ const NewProduct = ({ show, onSave, onClose }) => {
 
   const handleSaveProduct = () => {
     if (validate()) {
-      onSave({ title, description, image });
+      onSave({ title, brand, description, image }); 
       handleCloseAndReset();
     }
   };
 
   const handleCloseAndReset = () => {
     setTitle("");
+    setBrand("");
     setDescription("");
     setImage("");
-    setErrors({ title: "", description: "", image: "" });
+    setErrors({ title: "", brand: "", description: "", image: "" });
     onClose();
   };
 
@@ -80,6 +90,20 @@ const NewProduct = ({ show, onSave, onClose }) => {
             />
             <Form.Control.Feedback type="invalid">
               {errors.title}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBrand">
+            <Form.Label>Marca de la Máquina</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese la marca"
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+              isInvalid={!!errors.brand}
+              ref={brandRef}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.brand}
             </Form.Control.Feedback>
           </Form.Group>
 

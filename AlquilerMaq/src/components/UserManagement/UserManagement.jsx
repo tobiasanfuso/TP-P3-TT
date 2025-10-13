@@ -1,133 +1,146 @@
-import React, { useState } from "react";
-import { Button, Form, Table, Alert } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 
-const initialUsers = [
-  { id: 1, username: "admin", email: "admin@alquimaq.com", role: "admin" },
-  {
-    id: 2,
-    username: "sysadmin",
-    email: "sysadmin@alquimaq.com",
-    role: "sysadmin",
-  },
-  { id: 3, username: "cliente1", email: "cliente1@mail.com", role: "customer" },
-];
-
-const UserManagement = ({ user }) => {
-  const [users, setUsers] = useState(initialUsers);
-  const [formUser, setFormUser] = useState({
+const UserManagement = () => {
+  const [users, setUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
-    password: "",
-    role: "customer",
+    role: "",
   });
-  const [message, setMessage] = useState(null);
 
-  const handleChange = (e) => {
-    setFormUser({ ...formUser, [e.target.name]: e.target.value });
-  };
+  // Cargar usuarios
+  useEffect(() => {
+    fetch("http://localhost:3000/api/users", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(setUsers)
+      .catch(console.error);
+  }, []);
 
-  const handleCreate = () => {
-    if (!formUser.username || !formUser.email || !formUser.password) {
-      setMessage("Todos los campos son obligatorios");
-      return;
-    }
-    const newUser = {
-      id: users.length ? users[users.length - 1].id + 1 : 1,
-      username: formUser.username,
-      email: formUser.email,
-      role: formUser.role,
-    };
-    setUsers([...users, newUser]);
-    setMessage("Usuario creado correctamente");
-    setFormUser({
-      username: "",
-      email: "",
-      password: "",
-      role: "customer",
+  // Eliminar usuario
+  const handleDelete = async (id) => {
+    await fetch(`http://localhost:3000/api/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
+    setUsers(users.filter((u) => u.id !== id));
   };
 
-  const handleDelete = (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
-    setUsers(users.filter((u) => u.id !== id));
-    setMessage("Usuario eliminado");
+  // Editar usuario
+  const handleEditClick = (u) => {
+    setEditingUser(u);
+    setFormData({ username: u.username, email: u.email, role: u.role });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    await fetch(`http://localhost:3000/api/users/${editingUser.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    setEditingUser(null);
+    const updated = await fetch("http://localhost:3000/api/users", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    }).then((res) => res.json());
+    setUsers(updated);
   };
 
   return (
-    <div>
-      <h4 className="mt-4">Gestión de Usuarios</h4>
-      {message && <Alert variant="info">{message}</Alert>}
-      {user.role === "sysadmin" && (
-        <Form className="d-flex flex-wrap gap-2 mb-3">
-          <Form.Control
-            name="username"
-            placeholder="Usuario"
-            value={formUser.username}
-            onChange={handleChange}
-          />
-          <Form.Control
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={formUser.email}
-            onChange={handleChange}
-          />
-          <Form.Control
-            name="password"
-            type="password"
-            placeholder="Contraseña"
-            value={formUser.password}
-            onChange={handleChange}
-          />
-          <Form.Select
-            name="role"
-            value={formUser.role}
-            onChange={handleChange}
-          >
-            <option value="customer">customer</option>
-            <option value="admin">admin</option>
-          </Form.Select>
-          <Button variant="success" onClick={handleCreate}>
-            Agregar
-          </Button>
-        </Form>
-      )}
-      <Table striped bordered hover>
+    <div className="container mt-3">
+      <h3>Gestión de Usuarios</h3>
+
+      <table className="table table-striped">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Usuario</th>
             <th>Email</th>
-            {user.role === "sysadmin" && (
-              <>
-                <th>Rol</th>
-                <th>Acción</th>
-              </>
-            )}
+            <th>Rol</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
+              <td>{u.id}</td>
               <td>{u.username}</td>
               <td>{u.email}</td>
-              {user.role === "sysadmin" && (
-                <>
-                  <td>{u.role}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(u.id)}
-                    >
-                      Eliminar
-                    </Button>
-                  </td>
-                </>
-              )}
+              <td>{u.role}</td>
+              <td>
+                <button
+                  className="btn btn-warning btn-sm"
+                  onClick={() => handleEditClick(u)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-danger btn-sm ms-2"
+                  onClick={() => handleDelete(u.id)}
+                >
+                  Eliminar
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
-      </Table>
+      </table>
+
+      {editingUser && (
+        <div className="card p-3 mt-3">
+          <h5>Editar usuario: {editingUser.username}</h5>
+          <form onSubmit={handleEditSubmit}>
+            <input
+              className="form-control mb-2"
+              placeholder="Nombre de usuario"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+            />
+            <input
+              className="form-control mb-2"
+              placeholder="Correo electrónico"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />
+            <select
+              className="form-select mb-2"
+              value={formData.role}
+              onChange={(e) =>
+                setFormData({ ...formData, role: e.target.value })
+              }
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+              <option value="sysadmin">Sysadmin</option>
+            </select>
+
+            <button className="btn btn-success me-2" type="submit">
+              Guardar cambios
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setEditingUser(null)}
+              type="button"
+            >
+              Cancelar
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
