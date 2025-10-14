@@ -1,13 +1,37 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Button, Form, Table, Alert } from "react-bootstrap";
 import LoadingUsers from "../loadingUsers/LoadingUsers";
-import { useContext } from "react";
+import EditUserModal from "../UserManagement/EditUserModal";
 import { AuthenticationContext } from "../service/auth/auth.context";
+
 const UserManagement = ({ user }) => {
   const { token } = useContext(AuthenticationContext);
   const [users, setUsers] = useState([]);
   const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null);
+
+  const [formUser, setFormUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "customer",
+  });
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+    backend: "",
+  });
+
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  // 🔹 Estados para edición
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
   useEffect(() => {
     fetch("http://localhost:5000/api/users", {
       headers: { Authorization: `Bearer ${token}` },
@@ -22,27 +46,12 @@ const UserManagement = ({ user }) => {
       })
       .catch(() => setMessage("No se pudieron cargar los usuarios"));
   }, [reload]);
-  const [formUser, setFormUser] = useState({
-    username: "",
-    email: "",
-    password: "",
-    role: "customer",
-  });
-  const [errors, setErrors] = useState({
-    username: "",
-    email: "",
-    password: "",
-    backend: "",
-  });
-  const usernameRef = useRef(null);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const [message, setMessage] = useState(null);
 
   const handleChange = (e) => {
     setFormUser({ ...formUser, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "", backend: "" });
   };
+
   const validateForm = () => {
     let valid = true;
     const newErrors = { username: "", email: "", password: "", backend: "" };
@@ -82,6 +91,7 @@ const UserManagement = ({ user }) => {
 
     return valid;
   };
+
   const handleCreate = () => {
     if (!validateForm()) return;
     fetch("http://localhost:5000/api/users", {
@@ -104,7 +114,7 @@ const UserManagement = ({ user }) => {
           role: "customer",
         });
         setMessage("Usuario creado correctamente");
-        setReload((prev) => prev + 1); // recargar la lista de usuarios
+        setReload((prev) => prev + 1);
       })
       .catch((err) => {
         setMessage(err.message || "Error al crear usuario");
@@ -124,17 +134,46 @@ const UserManagement = ({ user }) => {
         return res.json();
       })
       .then(() => {
-        setReload((prev) => prev + 1); // recargar la lista de usuarios
+        setReload((prev) => prev + 1);
       })
       .catch((err) => {
         setMessage(err.message || "Error al eliminar usuario");
       });
   };
 
+  // 🔹 Funciones para edición
+  const handleEdit = (userToEdit) => {
+    setSelectedUser(userToEdit);
+    setShowEditModal(true);
+  };
+
+  const handleSave = async (updatedUser) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${updatedUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedUser),
+      });
+
+      if (!res.ok) throw new Error("Error al actualizar el usuario");
+      await res.json();
+      setShowEditModal(false);
+      setSelectedUser(null);
+      setReload((prev) => prev + 1);
+      setMessage("Usuario actualizado correctamente");
+    } catch (err) {
+      setMessage("Error al actualizar el usuario");
+    }
+  };
+
   return (
     <div>
       <h4 className="mt-4">Gestión de Usuarios</h4>
       {message && <Alert variant="info">{message}</Alert>}
+
       {user.role === "sysadmin" && (
         <Form className="d-flex flex-wrap gap-2 mb-3">
           <Form.Control
@@ -180,6 +219,7 @@ const UserManagement = ({ user }) => {
           </Button>
         </Form>
       )}
+
       {loading ? (
         <LoadingUsers role={user.role} />
       ) : (
@@ -206,6 +246,14 @@ const UserManagement = ({ user }) => {
                     <td>{u.role}</td>
                     <td>
                       <Button
+                        variant="warning"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleEdit(u)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
                         variant="danger"
                         size="sm"
                         onClick={() => handleDelete(u.id)}
@@ -220,6 +268,14 @@ const UserManagement = ({ user }) => {
           </tbody>
         </Table>
       )}
+
+      {/* Modal de Edición */}
+      <EditUserModal
+        show={showEditModal}
+        userData={selectedUser}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleSave}
+      />
     </div>
   );
 };

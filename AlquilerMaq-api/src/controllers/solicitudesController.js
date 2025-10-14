@@ -29,6 +29,22 @@ export const crearSolicitud = async (req, res) => {
 export const obtenerSolicitudes = async (req, res) => {
     try {
         const solicitudes = await SolicitudesAlquiler.findAll({
+            where: { estado: ["pendiente", "aprobado"] },
+            include: [
+                { model: Users, attributes: ["id", "username", "email"] },
+                { model: Maquinas, attributes: ["id", "nombre", "precioPorDia"] }
+            ]
+        });
+        res.json(solicitudes);
+    } catch (error) {
+        console.error("Error al obtener solicitudes:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+export const obtenerSolicitudesRechazadasFinalizadas = async (req, res) => {
+    try {
+        const solicitudes = await SolicitudesAlquiler.findAll({
+            where: { estado: ["rechazado", "finalizado"] },
             include: [
                 { model: Users, attributes: ["id", "username", "email"] },
                 { model: Maquinas, attributes: ["id", "nombre", "precioPorDia"] }
@@ -41,12 +57,13 @@ export const obtenerSolicitudes = async (req, res) => {
     }
 };
 
+
 // Obtener solicitudes de un usuario específico
 export const obtenerSolicitudesPorUsuario = async (req, res) => {
     const userId = req.user.id; // usuario logueado
     try {
         const solicitudes = await SolicitudesAlquiler.findAll({
-            where: { userId },
+            where: { userId, estado: ["pendiente", "aprobado"] },
             include: [{ model: Maquinas, attributes: ["id", "nombre", "precioPorDia"] }]
         });
         res.json(solicitudes);
@@ -55,7 +72,23 @@ export const obtenerSolicitudesPorUsuario = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
-
+// Obtener solicitudes de un usuario específico (rechazadas y finalizadas)
+export const obtenerSolicitudesPorUsuarioRechazadasFinalizadas = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const solicitudes = await SolicitudesAlquiler.findAll({
+            where: {
+                userId,
+                estado: ["rechazado", "finalizado"]
+            },
+            include: [{ model: Maquinas, attributes: ["id", "nombre", "precioPorDia"] }]
+        });
+        res.json(solicitudes);
+    } catch (error) {
+        console.error("Error al obtener solicitudes:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
 // Cambiar estado de una solicitud (admin/sysadmin)
 export const cambiarEstadoSolicitud = async (req, res) => {
     const { id } = req.params;
