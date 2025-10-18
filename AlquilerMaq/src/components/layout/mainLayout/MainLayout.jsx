@@ -34,7 +34,9 @@ const MainLayout = ({ children }) => {
                 currentRole === "sysadmin") && (
                 <>
                   <Nav.Link onClick={() => navigate("/mis-solicitudes")}>
-                    Mis solicitudes
+                    {user.role === "customer"
+                      ? "Mis Solicitudes"
+                      : "Solicitudes"}
                   </Nav.Link>
                   <Nav.Link onClick={() => navigate("/historial-solicitudes")}>
                     Historial de solicitudes
