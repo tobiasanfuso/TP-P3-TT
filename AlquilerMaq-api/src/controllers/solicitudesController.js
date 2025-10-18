@@ -107,3 +107,43 @@ export const cambiarEstadoSolicitud = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
+
+// Borrar solicitud (solo admin/sysadmin)
+export const borrarSolicitudAdmin = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const solicitud = await SolicitudesAlquiler.findByPk(id);
+        if (!solicitud) return res.status(404).json({ message: "Solicitud no encontrada" });
+
+        await solicitud.destroy();
+        res.json({ message: "Solicitud eliminada correctamente" });
+    } catch (error) {
+        console.error("Error al borrar solicitud:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+// Borrar solicitud del usuario (solo si pendiente)
+export const borrarSolicitudUsuario = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const solicitud = await SolicitudesAlquiler.findByPk(id);
+        if (!solicitud) return res.status(404).json({ message: "Solicitud no encontrada" });
+
+        if (solicitud.userId !== userId)
+            return res.status(403).json({ message: "No podés borrar esta solicitud" });
+
+        if (solicitud.estado !== "pendiente")
+            return res.status(403).json({ message: "Solo se pueden borrar solicitudes pendientes" });
+
+        await solicitud.destroy();
+        res.json({ message: "Solicitud eliminada correctamente" });
+    } catch (error) {
+        console.error("Error al borrar solicitud:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};

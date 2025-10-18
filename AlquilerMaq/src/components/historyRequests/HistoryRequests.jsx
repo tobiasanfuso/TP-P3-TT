@@ -1,42 +1,20 @@
-import React from "react";
-import { ListGroup } from "react-bootstrap";
+import React, { useContext } from "react";
+import RequestsList from "../requestsList/RequestsList";
+import { AuthenticationContext } from "../service/auth/auth.context";
 
 const HistoryRequests = () => {
-  // Ejemplo de datos estáticos
-  const rentalRequests = [
-    {
-      producto: "Martillo",
-      username: "JohnDoe",
-      email: "john.doe@example.com",
-      telefono: "+1 555-1234",
-      state: "finalizada",
-    },
-    {
-      producto: "Martillo neumatico",
-      username: "JaneQQ",
-      email: "jane.smith@example.com",
-      telefono: "+1 555-5678",
-      state: "finalizada",
-    },
-  ];
+  const { user } = useContext(AuthenticationContext);
+  const endpoint =
+    user.role === "customer"
+      ? "http://localhost:5000/api/solicitudes/historial-solicitudes"
+      : "http://localhost:5000/api/solicitudes/historial-solicitudes-admin";
 
   return (
-    <div>
-      <h3 className="mb-3">Historial de Solicitudes</h3>
-
-      {rentalRequests.length === 0 ? (
-        <p>No se han realizado solicitudes aún.</p>
-      ) : (
-        <ListGroup>
-          {rentalRequests.map((req, index) => (
-            <ListGroup.Item key={index}>
-              <strong>{req.producto}</strong> – {req.username} – {req.email} –{" "}
-              {req.telefono} – {req.state}
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-      )}
-    </div>
+    <RequestsList
+      title="Historial de Solicitudes"
+      apiEndpoint={endpoint}
+      allowEdit={user.role === "admin" || user.role === "sysadmin"}
+    />
   );
 };
 
