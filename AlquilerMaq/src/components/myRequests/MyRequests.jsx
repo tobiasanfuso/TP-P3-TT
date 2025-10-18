@@ -11,7 +11,7 @@ const MyRequests = () => {
 
   return (
     <RequestsList
-      title="Mis Solicitudes"
+      title={user.role === "customer" ? "Mis Solicitudes" : "Solicitudes"}
       apiEndpoint={endpoint}
       allowEdit={user.role === "admin" || user.role === "sysadmin"}
     />
