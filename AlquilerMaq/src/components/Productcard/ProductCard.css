@@ -45,6 +45,12 @@
 
 .product-actions { align-items: stretch; }
 
+.placeholder-btn {
+  height: 32px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
 /* móvil: apila los buttons */
 @media (max-width: 576.98px) {
   .product-actions { 
