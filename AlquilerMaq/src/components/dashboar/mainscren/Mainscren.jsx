@@ -32,7 +32,8 @@ const MainScreen = () => {
           title: m.nombre,
           description: m.descripcion,
           image: m.imagen,
-        }));
+          brand: m.marca, 
+        }));        
         console.log(data);
         setProducts(mappedProducts);
       } catch (err) {
@@ -206,6 +207,7 @@ const MainScreen = () => {
                 title={product.title}
                 description={product.description}
                 image={product.image}
+                brand={product.brand}
                 onDetails={() => setSelectedProduct(product)}
                 onRent={() => setRentalModalProduct(product)}
                 onDelete={() => handleDeleteProduct(product)}
