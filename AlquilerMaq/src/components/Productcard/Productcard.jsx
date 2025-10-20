@@ -18,22 +18,22 @@ const ProductCard = ({
         <h6 className="text-muted mb-1">Marca</h6>
         <h5 className="card-title fw-semibold">{title}</h5>
         <p className="card-text text-secondary small">{description}</p>
-        <div className="d-flex justify-content-center gap-2 mt-3">
+        <div className="d-flex flex-wrap justify-content-center gap-2 mt-3 product-actions">
           <button
             className="btn btn-outline-primary btn-sm px-3"
             onClick={onDetails}
           >
             + Detalles
           </button>
-          <button className="btn btn-success px-4" onClick={onRent}>
+          <button className="btn btn-success btn-sm px-3" onClick={onRent}>
             Alquilar
           </button>
           {(user.role === "admin" || user.role === "sysadmin") && (
             <>
-              <button className="btn btn-warning btn-sm px-3" onClick={onEdit}>
+              <button className="btn btn-outline-warning btn-sm px-3" onClick={onEdit}>
                 Modificar
               </button>
-              <button className="btn btn-danger btn-sm px-3" onClick={onDelete}>
+              <button className="btn btn-outline-danger btn-sm px-3" onClick={onDelete}>
                 Eliminar
               </button>
             </>
