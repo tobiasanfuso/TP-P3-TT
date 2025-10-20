@@ -11,6 +11,10 @@ export const Maquinas = sequelize.define("Maquinas", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    marca: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     descripcion: {
         type: DataTypes.TEXT,
         allowNull: true,
