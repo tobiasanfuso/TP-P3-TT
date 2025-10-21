@@ -144,7 +144,7 @@ const UserManagement = ({ user }) => {
       })
       .then(() => {
         setReload((prev) => prev + 1);
-        toast.success("Usuario eliminado con éxito")
+        toast.success("Usuario eliminado con éxito");
       })
       .catch((err) => {
         toast.error(err.message || "Error al eliminar usuario");
