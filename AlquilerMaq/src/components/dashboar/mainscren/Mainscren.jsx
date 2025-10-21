@@ -12,12 +12,18 @@ import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
 import LoadingCard from "../../loadingCard/LoadingCard";
 import { useContext } from "react";
 import { AuthenticationContext } from "../../service/auth/auth.context";
-
+import { useNavigate } from "react-router";
+import { isTokenValid } from "../../auth/auth.services";
 const MainScreen = () => {
-  const { user, token } = useContext(AuthenticationContext);
+  const { user, token, handleLogoutUser } = useContext(AuthenticationContext);
   const [products, setProducts] = useState([]);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!isTokenValid(token)) {
+      handleLogoutUser();
+      navigate("/login");
+    }
     const fetchProducts = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/maquinas", {
@@ -26,23 +32,28 @@ const MainScreen = () => {
             Authorization: ` Bearer ${token}`,
           },
         });
+
         if (!res.ok) throw new Error("Error al cargar máquinas");
         const data = await res.json();
-        setLoadingProduct(false);
+
         const mappedProducts = data.map((m) => ({
           id: m.id,
           title: m.nombre,
           description: m.descripcion,
           image: m.imagen,
+          brand: m.marca,
         }));
         console.log(data);
         setProducts(mappedProducts);
       } catch (err) {
         console.error(err.message);
-        toast.error("Error al cargar máquinas", { toastId: "machines-load-error" });
+        toast.error("Error al cargar máquinas", {
+          toastId: "machines-load-error",
+        });
+      } finally {
+        setLoadingProduct(false);
       }
     };
-
     fetchProducts();
   }, [updateTrigger]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -125,17 +136,16 @@ const MainScreen = () => {
       toast.success("Producto actualizado", { toastId: "product-edit-ok" });
     } catch (err) {
       console.error("Error al actualizar máquina:", err.message);
-      toast.error("No se pudo actualizar el producto", { toastId: "product-edit-error" });
+      toast.error("No se pudo actualizar el producto", {
+        toastId: "product-edit-error",
+      });
     }
   };
 
   const handleAddProduct = (newProduct) => {
     const productWithId = { ...newProduct, id: products.length + 1 };
     setProducts([...products, productWithId]);
-    toast.success("Producto agregado ✅", { toastId: "product-add-ok" });
   };
-
-
 
   const handleCancelDelete = async () => {
     setIsDeleteModalOpen(false);
@@ -157,7 +167,9 @@ const MainScreen = () => {
       toast.success("Producto eliminado 🗑️", { toastId: "product-delete-ok" });
     } catch (err) {
       console.error(err.message);
-      toast.error("No se pudo eliminar el producto", { toastId: "product-delete-error" });
+      toast.error("No se pudo eliminar el producto", {
+        toastId: "product-delete-error",
+      });
     }
   };
   return (
@@ -209,6 +221,12 @@ const MainScreen = () => {
       <Row className="g-4 products-grid">
         {loadingProduct ? (
           <LoadingCard />
+        ) : filteredProducts.length === 0 ? (
+          <Col>
+            <p className="text-muted text-center">
+              No se encontraron productos.
+            </p>
+          </Col>
         ) : (
           filteredProducts.map((product) => (
             <Col xs={12} sm={6} md={4} key={product.id}>
@@ -216,6 +234,7 @@ const MainScreen = () => {
                 title={product.title}
                 description={product.description}
                 image={product.image}
+                brand={product.brand}
                 onDetails={() => setSelectedProduct(product)}
                 onRent={() => setRentalModalProduct(product)}
                 onDelete={() => handleDeleteProduct(product)}

@@ -16,27 +16,30 @@ import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
 import { useContext } from "react";
 import { AuthenticationContext } from "./components/service/auth/auth.context";
 
+import { isTokenValid } from "./components/auth/auth.services";
 function App() {
-  const { user } = useContext(AuthenticationContext);
+  const { user, token } = useContext(AuthenticationContext);
   return (
     <div className="App">
       <BrowserRouter>
-      <ToastContainer 
-        position="top-right"
-        autoClose={4500}
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnFocusLoss={false}
-        limit={3}
-        theme="light"
-      />
+        <ToastContainer
+          position="top-right"
+          autoClose={4500}
+          newestOnTop
+          closeOnClick
+          draggable
+          pauseOnFocusLoss={false}
+          limit={3}
+          theme="light"
+        />
 
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route
             path="/login"
-            element={user ? <Navigate to="/main" replace /> : <Login />}
+            element={
+              isTokenValid(token) ? <Navigate to="/main" replace /> : <Login />
+            }
           />
           <Route path="/register" element={<UserRegister />} />
           <Route element={<ProtectedRoute />}>

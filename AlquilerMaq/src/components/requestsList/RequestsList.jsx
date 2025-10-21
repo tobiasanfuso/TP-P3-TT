@@ -3,6 +3,8 @@ import { ListGroup, Badge, Spinner, Alert, Dropdown } from "react-bootstrap";
 import { AuthenticationContext } from "../service/auth/auth.context";
 import { Trash } from "react-bootstrap-icons";
 import "./RequestsList.css";
+import { isTokenValid } from "../auth/auth.services";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
 const estados = [
@@ -13,20 +15,29 @@ const estados = [
 ];
 
 const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
-  const { token, user } = useContext(AuthenticationContext);
+  const { token, user, handleLogoutUser } = useContext(AuthenticationContext);
   const [rentalRequests, setRentalRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
   const [reload, setReload] = useState(false);
 
+  const navigate = useNavigate();
   const getBadgeColor = (estado) => {
     const found = estados.find((e) => e.value === estado);
     return found.color;
   };
   useEffect(() => {
+    if (!isTokenValid(token)) {
+      handleLogoutUser();
+      navigate("/login");
+    }
     const fetchRequests = async () => {
       setLoading(true);
       try {
+        if (!isTokenValid(token)) {
+          navigate("/login");
+          return;
+        }
         const res = await fetch(apiEndpoint, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -180,7 +191,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                       <Badge
                         bg={getBadgeColor(req.estado)}
                         className="text-capitalize text-white"
-                        data-state={req.estado} 
+                        data-state={req.estado}
                       >
                         {req.estado}
                       </Badge>
