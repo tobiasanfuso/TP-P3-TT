@@ -41,6 +41,7 @@ const MainScreen = () => {
           description: m.descripcion,
           image: m.imagen,
           brand: m.marca,
+          priceDay: m.precioPorDia,
         }));
         console.log(data);
         setProducts(mappedProducts);
