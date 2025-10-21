@@ -34,7 +34,7 @@ const MainScreen = () => {
 
         if (!res.ok) throw new Error("Error al cargar máquinas");
         const data = await res.json();
-        setLoadingProduct(false);
+
         const mappedProducts = data.map((m) => ({
           id: m.id,
           title: m.nombre,
@@ -45,6 +45,8 @@ const MainScreen = () => {
         setProducts(mappedProducts);
       } catch (err) {
         console.error(err.message);
+      } finally {
+        setLoadingProduct(false);
       }
     };
     fetchProducts();
@@ -206,6 +208,12 @@ const MainScreen = () => {
       <Row className="g-4 products-grid">
         {loadingProduct ? (
           <LoadingCard />
+        ) : filteredProducts.length === 0 ? (
+          <Col>
+            <p className="text-muted text-center">
+              No se encontraron productos.
+            </p>
+          </Col>
         ) : (
           filteredProducts.map((product) => (
             <Col xs={12} sm={6} md={4} key={product.id}>
