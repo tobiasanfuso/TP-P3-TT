@@ -2,11 +2,17 @@ import { Users } from '../Models/Users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";
+import { validateRegisterUser } from '../helpers/validations.js';
 dotenv.config();
 export const register = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
+        const errors = validateRegisterUser({ username, email, password });
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({ errors, message: "Datos inválidos" });
+        }
+
         const userExists = await Users.findOne({ where: { username } });
         const emailExists = await Users.findOne({ where: { email } });
 
