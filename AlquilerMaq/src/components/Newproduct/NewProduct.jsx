@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import { useContext } from "react";
 import { AuthenticationContext } from "../service/auth/auth.context";
+import { validateProduct } from "../utils/validateProduct";
 const NewProduct = ({ show, onSave, onClose }) => {
   const { token } = useContext(AuthenticationContext);
   const [nombre, setNombre] = useState("");
@@ -28,54 +29,26 @@ const NewProduct = ({ show, onSave, onClose }) => {
   const precioRef = useRef(null);
 
   const validate = () => {
-    let valid = true;
-    const newErrors = {
-      nombre: "",
-      marca: "",
-      descripcion: "",
-      imagen: "",
-      precioPorDia: "",
-    };
-
-    if (!nombre.trim()) {
-      newErrors.nombre = "El nombre es obligatorio";
-      valid = false;
-    } else if (nombre.trim().length < 3) {
-      newErrors.nombre = "Debe tener al menos 3 caracteres";
-      valid = false;
-    }
-
-    if (!marca.trim()) {
-      newErrors.marca = "La marca es obligatoria";
-      valid = false;
-    }
-
-    if (!descripcion.trim()) {
-      newErrors.descripcion = "La descripción es obligatoria";
-      valid = false;
-    }
-
-    if (!precioPorDia || isNaN(precioPorDia) || parseFloat(precioPorDia) <= 0) {
-      newErrors.precioPorDia = "Ingrese un precio válido mayor que 0";
-      valid = false;
-    }
-
-    if (!imagen.trim()) {
-      newErrors.imagen = "La URL de la imagen es obligatoria";
-      valid = false;
-    }
-
+    const newErrors = validateProduct({
+      nombre,
+      marca,
+      descripcion,
+      imagen,
+      precioPorDia,
+    });
     setErrors(newErrors);
 
-    if (!valid) {
-      if (newErrors.nombre) nombreRef.current.focus();
-      else if (newErrors.marca) marcaRef.current.focus();
-      else if (newErrors.descripcion) descripcionRef.current.focus();
-      else if (newErrors.precioPorDia) precioRef.current.focus();
-      else if (newErrors.imagen) imagenRef.current.focus();
+    const firstError = Object.keys(newErrors)[0];
+    if (firstError) {
+      if (firstError === "nombre") nombreRef.current.focus();
+      else if (firstError === "marca") marcaRef.current.focus();
+      else if (firstError === "descripcion") descripcionRef.current.focus();
+      else if (firstError === "precioPorDia") precioRef.current.focus();
+      else if (firstError === "imagen") imagenRef.current.focus();
+      return false;
     }
 
-    return valid;
+    return true;
   };
 
   const handleSaveProduct = async () => {
