@@ -4,6 +4,7 @@ import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
 import "./Login.css";
 import { AuthenticationContext } from "../../service/auth/auth.context";
 import { validateLoginUser } from "../../utils/validation"; // mismas validaciones del backend
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { handleLoginUser } = useContext(AuthenticationContext);
@@ -78,6 +79,7 @@ const Login = () => {
       handleLoginUser(data);
       setEmail("");
       setPassword("");
+      toast.success("Sesión iniciada ;)", {toastId: "login-ok"})
       navigate("/main");
     } catch (err) {
       setErrors((prev) => ({

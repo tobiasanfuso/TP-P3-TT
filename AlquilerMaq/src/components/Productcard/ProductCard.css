@@ -31,7 +31,6 @@
 .card-body {
   padding: 1.2rem;
 }
-
 .card-title {
   color: #2c3e50;
 }
@@ -42,7 +41,24 @@
   transition: all 0.2s ease;
 }
 
-.btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: #fff;
+.btn-outline-primary:hover { background-color: #0d6efd; color: #fff; }
+
+.product-actions { align-items: stretch; }
+
+.placeholder-btn {
+  height: 32px;
+  border-radius: 12px;
+  display: inline-block;
 }
+
+/* móvil: apila los buttons */
+@media (max-width: 576.98px) {
+  .product-actions { 
+    flex-direction: column; 
+    gap: .5rem;
+  }
+  .product-actions .btn {
+    width: 100%;
+  }
+}
+

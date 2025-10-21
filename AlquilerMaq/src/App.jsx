@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/auth/login/Login";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import MainScreen from "./components/dashboar/mainscren/Mainscren";
 import NotFound from "./components/dashboar/notFound/NotFound";
@@ -14,11 +16,23 @@ import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
 import { useContext } from "react";
 import { AuthenticationContext } from "./components/service/auth/auth.context";
 import { isTokenValid } from "./components/auth/auth.services";
+
 function App() {
   const { user, token } = useContext(AuthenticationContext);
   return (
     <div className="App">
       <BrowserRouter>
+      <ToastContainer 
+        position="top-right"
+        autoClose={4500}
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnFocusLoss={false}
+        limit={3}
+        theme="light"
+      />
+
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route

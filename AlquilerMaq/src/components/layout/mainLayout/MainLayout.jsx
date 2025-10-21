@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown"
 import { useNavigate } from "react-router-dom";
 import "./MainLayout.css";
 import { useContext } from "react";
@@ -32,17 +33,17 @@ const MainLayout = ({ children }) => {
               {(currentRole === "customer" ||
                 currentRole === "admin" ||
                 currentRole === "sysadmin") && (
-                <>
-                  <Nav.Link onClick={() => navigate("/mis-solicitudes")}>
-                    {user.role === "customer"
-                      ? "Mis Solicitudes"
-                      : "Solicitudes"}
-                  </Nav.Link>
-                  <Nav.Link onClick={() => navigate("/historial-solicitudes")}>
-                    Historial de solicitudes
-                  </Nav.Link>
-                </>
-              )}
+                  <>
+                    <Nav.Link onClick={() => navigate("/mis-solicitudes")}>
+                      {user.role === "customer"
+                        ? "Mis Solicitudes"
+                        : "Solicitudes"}
+                    </Nav.Link>
+                    <Nav.Link onClick={() => navigate("/historial-solicitudes")}>
+                      Historial de solicitudes
+                    </Nav.Link>
+                  </>
+                )}
               {currentRole === "admin" && (
                 <Nav.Link onClick={() => navigate("/panel-de-control")}>
                   Gestión de usuarios
@@ -55,18 +56,22 @@ const MainLayout = ({ children }) => {
               )}
             </Nav>
 
-            <div>
-              <Button
-                variant="primary"
-                className="me-2"
-                onClick={handleProfile}
-              >
-                {currentUser}
-              </Button>
-              <Button variant="danger" onClick={handleLogout}>
-                Cerrar sesión
-              </Button>
-            </div>
+            <Dropdown align={{lg: "end"}} className="user-dropdown">
+              <Dropdown.Toggle variant="light" className="avatar-toggle">
+                <span className="avatar-initials">
+                  {(currentUser || "").charAt(0).toUpperCase()}
+                </span>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="user-menu" flip>
+                <Dropdown.Header>{currentUser}</Dropdown.Header>
+                <Dropdown.Item onClick={handleProfile}>Ver perfil</Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={handleLogout} className="text-danger">
+                  Cerrar sesión
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Navbar.Collapse>
         </Container>
       </Navbar>

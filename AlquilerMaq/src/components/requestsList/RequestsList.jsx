@@ -5,6 +5,8 @@ import { Trash } from "react-bootstrap-icons";
 import "./RequestsList.css";
 import { isTokenValid } from "../auth/auth.services";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+
 const estados = [
   { value: "pendiente", label: "Pendiente", color: "warning" },
   { value: "aprobado", label: "Aprobado", color: "success" },
@@ -44,7 +46,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
         setRentalRequests(data);
       } catch (err) {
         setRentalRequests([]);
-        setMessage(err.message);
+        toast.error(err.message || "No se pudieron cargar las solicitudes");
       } finally {
         setLoading(false);
       }
@@ -59,7 +61,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("No se pudo borrar la solicitud");
-      setMessage("Solicitud borrada correctamente");
+      toast.success("Solicitud borrada correctamente");
       setReload((prev) => !prev);
     } catch (err) {
       setMessage(err.message);
@@ -70,7 +72,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
     try {
       const solicitud = rentalRequests.find((r) => r.id === id);
       if (solicitud.estado !== "pendiente") {
-        setMessage("Solo se pueden borrar solicitudes pendientes");
+        toast.warn("Solo se pueden borrar solicitudes pendientes");
         return;
       }
       const res = await fetch(
@@ -101,7 +103,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
         }
       );
       if (!res.ok) throw new Error("No se pudo actualizar el estado");
-      setMessage("Estado actualizado correctamente");
+      toast.success("Estado actualizado correctamente");
 
       setReload((prev) => !prev);
     } catch (err) {
@@ -122,7 +124,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
         <p className="text-muted">No se han realizado solicitudes aún.</p>
       ) : (
         <ListGroup className="requests-list">
-          {rentalRequests.map((req) => {
+          {rentalRequests.map((req, i) => {
             const puedeBorrarAdmin =
               user.role === "admin" || user.role === "sysadmin";
             const puedeBorrarUsuario =
@@ -137,6 +139,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
               <ListGroup.Item
                 key={req.id}
                 className="request-item d-flex justify-content-between align-items-center fade-up"
+                style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div>
                   <h6 className="fw-semibold mb-1">{req.Maquina?.nombre}</h6>
@@ -156,8 +159,9 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                         <strong>Estado: </strong>
                         <Dropdown.Toggle
                           as={Badge}
-                          bg={getBadgeColor(req.estado)}
-                          className="estado-toggle text-capitalize text-white"
+                          bg="light"
+                          className="estado-toggle status-badge text-capitalize"
+                          data-state={req.estado}
                           style={{ cursor: "pointer" }}
                           id={req.id}
                         >
@@ -173,8 +177,9 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                               active={req.estado === opt.value}
                             >
                               <Badge
-                                bg={opt.color}
+                                bg="light"
                                 className="text-capitalize text-black w-100"
+                                data-state={opt.value}
                               >
                                 {opt.label}
                               </Badge>
@@ -186,6 +191,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                       <Badge
                         bg={getBadgeColor(req.estado)}
                         className="text-capitalize text-white"
+                        data-state={req.estado} 
                       >
                         {req.estado}
                       </Badge>
