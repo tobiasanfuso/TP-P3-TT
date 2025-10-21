@@ -3,6 +3,7 @@ import { Button, Form, Table, Alert } from "react-bootstrap";
 import LoadingUsers from "../loadingUsers/LoadingUsers";
 import EditUserModal from "../UserManagement/EditUserModal";
 import { AuthenticationContext } from "../service/auth/auth.context";
+import { toast } from "react-toastify";
 
 const UserManagement = ({ user }) => {
   const { token } = useContext(AuthenticationContext);
@@ -28,7 +29,7 @@ const UserManagement = ({ user }) => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
-  // 🔹 Estados para edición
+  // Estados para edición
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -113,11 +114,11 @@ const UserManagement = ({ user }) => {
           password: "",
           role: "customer",
         });
-        setMessage("Usuario creado correctamente");
+        toast.success("Usuario creado correctamente");
         setReload((prev) => prev + 1);
       })
       .catch((err) => {
-        setMessage(err.message || "Error al crear usuario");
+        toast.error(err.message || "Error al crear usuario");
       });
   };
 
@@ -135,13 +136,14 @@ const UserManagement = ({ user }) => {
       })
       .then(() => {
         setReload((prev) => prev + 1);
+        toast.success("Usuario eliminado con éxito")
       })
       .catch((err) => {
-        setMessage(err.message || "Error al eliminar usuario");
+        toast.error(err.message || "Error al eliminar usuario");
       });
   };
 
-  // 🔹 Funciones para edición
+  // Funciones para edición
   const handleEdit = (userToEdit) => {
     setSelectedUser(userToEdit);
     setShowEditModal(true);
@@ -163,9 +165,9 @@ const UserManagement = ({ user }) => {
       setShowEditModal(false);
       setSelectedUser(null);
       setReload((prev) => prev + 1);
-      setMessage("Usuario actualizado correctamente");
+      toast.success("Usuario actualizado correctamente");
     } catch (err) {
-      setMessage("Error al actualizar el usuario");
+      toast.error("Error al actualizar el usuario");
     }
   };
 

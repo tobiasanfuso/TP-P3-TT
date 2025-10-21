@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Button, Row, Col, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
 import "./MainScreen.css";
 import EditProduct from "../../editProduct/EditProduct";
 import NewProduct from "../../Newproduct/NewProduct";
@@ -11,6 +12,7 @@ import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
 import LoadingCard from "../../loadingCard/LoadingCard";
 import { useContext } from "react";
 import { AuthenticationContext } from "../../service/auth/auth.context";
+
 const MainScreen = () => {
   const { user, token } = useContext(AuthenticationContext);
   const [products, setProducts] = useState([]);
@@ -37,6 +39,7 @@ const MainScreen = () => {
         setProducts(mappedProducts);
       } catch (err) {
         console.error(err.message);
+        toast.error("Error al cargar máquinas", { toastId: "machines-load-error" });
       }
     };
 
@@ -119,15 +122,20 @@ const MainScreen = () => {
 
       setIsEditModalOpen(false);
       setEditProduct(null);
+      toast.success("Producto actualizado", { toastId: "product-edit-ok" });
     } catch (err) {
       console.error("Error al actualizar máquina:", err.message);
+      toast.error("No se pudo actualizar el producto", { toastId: "product-edit-error" });
     }
   };
 
   const handleAddProduct = (newProduct) => {
     const productWithId = { ...newProduct, id: products.length + 1 };
     setProducts([...products, productWithId]);
+    toast.success("Producto agregado ✅", { toastId: "product-add-ok" });
   };
+
+
 
   const handleCancelDelete = async () => {
     setIsDeleteModalOpen(false);
@@ -146,8 +154,10 @@ const MainScreen = () => {
       setIsDeleteModalOpen(false);
       setDeleteProduct(null);
       setUpdateTrigger((prev) => prev + 1);
+      toast.success("Producto eliminado 🗑️", { toastId: "product-delete-ok" });
     } catch (err) {
       console.error(err.message);
+      toast.error("No se pudo eliminar el producto", { toastId: "product-delete-error" });
     }
   };
   return (
