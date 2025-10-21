@@ -3,6 +3,7 @@ import { Card, Row, Button, Form, Alert, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./UserRegister.css";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
+import { toast } from "react-toastify";
 const UserRegister = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -118,10 +119,13 @@ const UserRegister = () => {
       if (!res.ok) {
         const errData = await res.json();
         setErrors((prev) => ({ ...prev, backend: errData.message }));
+        toast.error(errData?.message || "No se pudo registrar", {
+          toastId: "register-error",
+        });
         return;
       }
 
-      alert("Registro exitoso! Ahora puede iniciar sesión.");
+      toast.success("¡Registro existoso! ;)", {toastId: "register-ok"})
       setEmail("");
       setUserName("");
       setPassword("");
@@ -140,6 +144,9 @@ const UserRegister = () => {
         backend: "Error en el servidor, intente más tarde",
       }));
       console.error(err);
+      toast.error("Error en el servidor, intente más tarde", {
+        toastId: "register-network",
+      })
     }
   };
 
