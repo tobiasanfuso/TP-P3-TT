@@ -48,7 +48,9 @@ const MainScreen = () => {
         setProducts(mappedProducts);
       } catch (err) {
         console.error(err.message);
-         toast.error("Error al cargar máquinas", { toastId: "machines-load-error" });
+        toast.error("Error al cargar máquinas", {
+          toastId: "machines-load-error",
+        });
       } finally {
         setLoadingProduct(false);
       }
@@ -109,6 +111,8 @@ const MainScreen = () => {
             nombre: updatedProduct.title,
             descripcion: updatedProduct.description,
             imagen: updatedProduct.imagen,
+            precioPorDia: updatedProduct.priceDay,
+            marca: updatedProduct.brand,
           }),
         }
       );
@@ -125,6 +129,8 @@ const MainScreen = () => {
                 title: data.maquina.nombre,
                 description: data.maquina.descripcion,
                 image: data.maquina.imagen,
+                priceDay: data.maquina.precioPorDia,
+                brand: data.maquina.marca,
               }
             : p
         )
@@ -135,7 +141,9 @@ const MainScreen = () => {
       toast.success("Producto actualizado", { toastId: "product-edit-ok" });
     } catch (err) {
       console.error("Error al actualizar máquina:", err.message);
-      toast.error("No se pudo actualizar el producto", { toastId: "product-edit-error" });
+      toast.error("No se pudo actualizar el producto", {
+        toastId: "product-edit-error",
+      });
     }
   };
 
@@ -143,8 +151,6 @@ const MainScreen = () => {
     setUpdateTrigger((prev) => prev + 1);
     toast.success("Producto agregado ✅", { toastId: "product-add-ok" });
   };
-
-
 
   const handleCancelDelete = async () => {
     setIsDeleteModalOpen(false);
@@ -166,7 +172,9 @@ const MainScreen = () => {
       toast.success("Producto eliminado 🗑️", { toastId: "product-delete-ok" });
     } catch (err) {
       console.error(err.message);
-      toast.error("No se pudo eliminar el producto", { toastId: "product-delete-error" });
+      toast.error("No se pudo eliminar el producto", {
+        toastId: "product-delete-error",
+      });
     }
   };
   return (
