@@ -11,11 +11,18 @@ import ConfirmDeleteModal from "../../confirmDeleteModal/ConfirmDeleteModal";
 import LoadingCard from "../../loadingCard/LoadingCard";
 import { useContext } from "react";
 import { AuthenticationContext } from "../../service/auth/auth.context";
+import { useNavigate } from "react-router";
+import { isTokenValid } from "../../auth/auth.services";
 const MainScreen = () => {
-  const { user, token } = useContext(AuthenticationContext);
+  const { user, token, handleLogoutUser } = useContext(AuthenticationContext);
   const [products, setProducts] = useState([]);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!isTokenValid(token)) {
+      handleLogoutUser();
+      navigate("/login");
+    }
     const fetchProducts = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/maquinas", {
@@ -24,6 +31,7 @@ const MainScreen = () => {
             Authorization: ` Bearer ${token}`,
           },
         });
+
         if (!res.ok) throw new Error("Error al cargar máquinas");
         const data = await res.json();
         setLoadingProduct(false);
@@ -39,7 +47,6 @@ const MainScreen = () => {
         console.error(err.message);
       }
     };
-
     fetchProducts();
   }, [updateTrigger]);
   const [isModalOpen, setIsModalOpen] = useState(false);
