@@ -1,20 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
 import "./Login.css";
-import { useContext } from "react";
 import { AuthenticationContext } from "../../service/auth/auth.context";
+import { validateLoginUser } from "../../utils/validation"; // mismas validaciones del backend
 import { toast } from "react-toastify";
 
 const Login = () => {
   const { handleLoginUser } = useContext(AuthenticationContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
-    email: false,
-    password: false,
-    exist: false,
-    notFunction: false,
+    email: "",
+    password: "",
+    exist: "",
+    notFunction: "",
   });
 
   const emailRef = useRef(null);
@@ -23,31 +24,38 @@ const Login = () => {
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setErrors((prev) => ({ ...prev, username: false }));
+    setErrors((prev) => ({ ...prev, email: "", exist: "", notFunction: "" }));
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setErrors((prev) => ({ ...prev, password: false }));
+    setErrors((prev) => ({
+      ...prev,
+      password: "",
+      exist: "",
+      notFunction: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({
-      email: false,
-      password: false,
-      exist: false,
-      notFunction: false,
+      email: "",
+      password: "",
+      exist: "",
+      notFunction: "",
     });
 
-    if (!emailRef.current.value) {
-      emailRef.current.focus();
-      setErrors((prev) => ({ ...prev, email: true }));
-      return;
-    }
-    if (!passwordRef.current.value || password.length < 7) {
-      passwordRef.current.focus();
-      setErrors((prev) => ({ ...prev, password: true }));
+    const validationErrors = validateLoginUser({ email, password });
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors((prev) => ({
+        ...prev,
+        email: validationErrors.email || "",
+        password: validationErrors.password || "",
+      }));
+
+      if (validationErrors.email) emailRef.current.focus();
+      else if (validationErrors.password) passwordRef.current.focus();
       return;
     }
 
@@ -55,23 +63,30 @@ const Login = () => {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }), // <- usar email
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
-        setErrors((prev) => ({ ...prev, exist: true }));
-      } else {
-        const data = await res.json(); // { token, user }
-        console.log("DATA LOGIN", typeof data.token);
-        handleLoginUser(data);
-        setEmail("");
-        setPassword("");
-        toast.success("Sesión iniciada ;)", {toastId: "login-ok"})
-        navigate("/main");
+        const errorData = await res.json();
+        setErrors((prev) => ({
+          ...prev,
+          exist: errorData.message || "Email o contraseña incorrectos",
+        }));
+        return;
       }
+
+      const data = await res.json(); // { token, user }
+      handleLoginUser(data);
+      setEmail("");
+      setPassword("");
+      toast.success("Sesión iniciada ;)", {toastId: "login-ok"})
+      navigate("/main");
     } catch (err) {
-      setErrors((prev) => ({ ...prev, notFunction: true }));
-      console.error(err.message);
+      setErrors((prev) => ({
+        ...prev,
+        notFunction: "Error al conectar con el servidor",
+      }));
+      console.error("Error de login:", err);
     }
   };
 
@@ -87,6 +102,7 @@ const Login = () => {
           </Row>
 
           <Form onSubmit={handleSubmit}>
+            {/* Email */}
             <FormGroup className="mb-4">
               <Form.Label>Email</Form.Label>
               <Form.Control
@@ -98,9 +114,7 @@ const Login = () => {
                 className={errors.email ? "border border-danger" : ""}
               />
               {errors.email && (
-                <Alert variant="danger" className="mt-2">
-                  El campo usuario es obligatorio
-                </Alert>
+                <p className="text-danger mt-2">{errors.email}</p>
               )}
             </FormGroup>
 
@@ -115,19 +129,17 @@ const Login = () => {
                 className={errors.password ? "border border-danger" : ""}
               />
               {errors.password && (
-                <Alert variant="danger" className="mt-2">
-                  La contraseña es incorrecta (mínimo 7 caracteres)
-                </Alert>
+                <p className="text-danger mt-2">{errors.password}</p>
               )}
             </FormGroup>
             {errors.exist && (
               <Alert variant="danger" className="mt-3">
-                El usuario o la contraseña es incorrecto.
+                {errors.exist}
               </Alert>
             )}
             {errors.notFunction && (
               <Alert variant="danger" className="mt-3">
-                Error al iniciar sesión. Inténtalo de nuevo más tarde.
+                {errors.notFunction}
               </Alert>
             )}
             <div className="d-flex justify-content-between mt-3 gap-2">

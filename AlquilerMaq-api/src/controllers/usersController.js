@@ -1,6 +1,6 @@
 import { Users } from "../Models/Users.js";
 import bcrypt from 'bcryptjs';
-
+import { validateRegisterUser, validateRole } from '../helpers/validations.js';
 //obtener todos los users
 
 export const getAllUsers = async (req, res) => {
@@ -68,6 +68,16 @@ export const createUser = async (req, res) => {
     const { username, email, password, role = "customer" } = req.body;
 
     try {
+        const errors = validateRegisterUser({ username, email, password });
+        if (Object.keys(errors).length > 0 && !validateRole(role)) {
+            return res.status(400).json({ errors, message: "Datos inválidos" });
+        }
+
+        const roleError = validateRole(role);
+        if (roleError) {
+            return res.status(400).json({ errors: { role: roleError }, message: "Datos inválidos" });
+        }
+
         const userExists = await Users.findOne({ where: { username } });
         const emailExists = await Users.findOne({ where: { email } });
 

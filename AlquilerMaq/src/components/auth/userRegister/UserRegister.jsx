@@ -3,6 +3,7 @@ import { Card, Row, Button, Form, Alert, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./UserRegister.css";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
+import { validateRegisterUser } from "../../utils/validation";
 import { toast } from "react-toastify";
 const UserRegister = () => {
   const [username, setUserName] = useState("");
@@ -45,64 +46,25 @@ const UserRegister = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   const validate = () => {
-    let valid = true;
-    const newErrors = {
-      username: "",
-      password: "",
-      confirmPassword: "",
-      email: "",
-      backend: "",
-    };
-
-    if (!email) {
-      newErrors.email = "El email es obligatorio";
-      valid = false;
-    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/i.test(email)) {
-      newErrors.email = "Ingrese un email válido";
-      valid = false;
-    }
-
-    if (!username) {
-      newErrors.username = "El nombre de usuario es obligatorio";
-      valid = false;
-    } else if (username.length < 3) {
-      newErrors.username = "Debe tener al menos 3 caracteres";
-      valid = false;
-    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = "Solo se permiten letras, números y guiones bajos";
-      valid = false;
-    }
-
-    if (!password) {
-      newErrors.password = "La contraseña es obligatoria";
-      valid = false;
-    } else if (password.length <= 7) {
-      newErrors.password = "Debe tener al menos 7 caracteres";
-      valid = false;
-    }
+    const newErrors = validateRegisterUser({ username, email, password });
     if (!confirmPassword) {
       newErrors.confirmPassword = "Debe confirmar la contraseña";
-      valid = false;
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Las contraseñas no coinciden";
-      valid = false;
     }
+
     setErrors(newErrors);
-
-    if (!valid) {
-      if (newErrors.email) {
-        emailRef.current.focus();
-      } else if (newErrors.username) {
-        usernameRef.current.focus();
-      } else if (newErrors.password) {
-        passwordRef.current.focus();
-      } else if (newErrors.confirmPassword) {
-        confirmPasswordRef.current.focus();
-      }
+    if (Object.keys(newErrors).length > 0) {
+      if (newErrors.email) emailRef.current.focus();
+      else if (newErrors.username) usernameRef.current.focus();
+      else if (newErrors.password) passwordRef.current.focus();
+      else if (newErrors.confirmPassword) confirmPasswordRef.current.focus();
+      return false;
     }
 
-    return valid;
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -118,6 +80,7 @@ const UserRegister = () => {
 
       if (!res.ok) {
         const errData = await res.json();
+
         setErrors((prev) => ({ ...prev, backend: errData.message }));
         toast.error(errData?.message || "No se pudo registrar", {
           toastId: "register-error",

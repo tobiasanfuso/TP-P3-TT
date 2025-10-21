@@ -3,10 +3,12 @@ import { Button, Form, Table, Alert } from "react-bootstrap";
 import LoadingUsers from "../loadingUsers/LoadingUsers";
 import EditUserModal from "../UserManagement/EditUserModal";
 import { AuthenticationContext } from "../service/auth/auth.context";
+import { isTokenValid } from "../auth/auth.services";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
 const UserManagement = ({ user }) => {
-  const { token } = useContext(AuthenticationContext);
+  const { token, handleLogoutUser } = useContext(AuthenticationContext);
   const [users, setUsers] = useState([]);
   const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,7 @@ const UserManagement = ({ user }) => {
     password: "",
     backend: "",
   });
+  const navigate = useNavigate();
 
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
@@ -34,6 +37,11 @@ const UserManagement = ({ user }) => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
+    if (!isTokenValid(token)) {
+      handleLogoutUser();
+      navigate("/login");
+    }
+
     fetch("http://localhost:5000/api/users", {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -151,14 +159,17 @@ const UserManagement = ({ user }) => {
 
   const handleSave = async (updatedUser) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${updatedUser.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedUser),
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/users/${updatedUser.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      );
 
       if (!res.ok) throw new Error("Error al actualizar el usuario");
       await res.json();
