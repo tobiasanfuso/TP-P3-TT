@@ -63,7 +63,7 @@ export const login = async (req, res) => {
         const token = jwt.sign(
             { id: user.id, role: user.role }, //payload 
             SECRET,                      //clave secreta
-            { expiresIn: 60 }           //duracion del token '2h'
+            { expiresIn: '2h' }           //duracion del token '2h'
         );
 
         //enviamos res sin pass
