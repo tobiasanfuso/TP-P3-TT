@@ -61,7 +61,7 @@ const RentalRequestModal = ({ product, onClose }) => {
 
       if (!response.ok)
         throw new Error(data.message || "Error al enviar solicitud");
-
+      onClose();
       setErrors({ fechaInicio: "", fechaFin: "" });
     } catch (error) {
       setMessage({ type: "error", text: error.message });
