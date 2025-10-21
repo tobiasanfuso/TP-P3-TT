@@ -40,8 +40,8 @@ const MainScreen = () => {
           title: m.nombre,
           description: m.descripcion,
           image: m.imagen,
-          brand: m.marca, 
-        }));        
+          brand: m.marca,
+        }));
         console.log(data);
         setProducts(mappedProducts);
       } catch (err) {
@@ -134,9 +134,8 @@ const MainScreen = () => {
     }
   };
 
-  const handleAddProduct = (newProduct) => {
-    const productWithId = { ...newProduct, id: products.length + 1 };
-    setProducts([...products, productWithId]);
+  const handleAddProduct = () => {
+    setUpdateTrigger((prev) => prev + 1);
   };
 
   const handleCancelDelete = async () => {
