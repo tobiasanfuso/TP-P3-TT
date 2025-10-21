@@ -1,38 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { validateUpdateUser } from "../utils/validation"; // tu función de validación
 
 const EditUserModal = ({ show, userData, onClose, onSave }) => {
   const [form, setForm] = useState({
     id: null,
     username: "",
     email: "",
-    role: "",
+    role: "customer",
   });
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({}); // solo mensajes de error
+
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
 
   useEffect(() => {
-    if (userData)
+    if (userData) {
       setForm({
         id: userData.id,
         username: userData.username || "",
         email: userData.email || "",
         role: userData.role || "customer",
       });
-    else setForm({ id: null, username: "", email: "", role: "" });
+    } else {
+      setForm({ id: null, username: "", email: "", role: "customer" });
+    }
+    setErrors({});
   }, [userData]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
 
   const handleSave = async () => {
-    // validaciones básicas
-    if (!form.username.trim() || !form.email.trim()) {
-      alert("Nombre de usuario y email son obligatorios");
-      return;
-    }
+    const validationErrors = validateUpdateUser(form);
+    setErrors(validationErrors);
+
+    if (validationErrors.username) usernameRef.current.focus();
+    else if (validationErrors.email) emailRef.current.focus();
+
+    if (Object.keys(validationErrors).length > 0) return;
+
     setSaving(true);
     try {
-      await onSave(form); // el onSave del padre hace el fetch PUT y refresca lista
+      await onSave(form);
     } catch (err) {
       console.error(err);
     } finally {
@@ -53,16 +66,27 @@ const EditUserModal = ({ show, userData, onClose, onSave }) => {
               name="username"
               value={form.username}
               onChange={handleChange}
+              ref={usernameRef}
+              isInvalid={errors.username}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.username}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
             <Form.Control
               name="email"
+              type="email"
               value={form.email}
               onChange={handleChange}
+              ref={emailRef}
+              isInvalid={errors.email}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.email}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">

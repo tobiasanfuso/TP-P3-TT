@@ -46,5 +46,17 @@ export const validateRegisterUser = ({ username, email, password }) => {
     return errors;
 };
 
+export const validateUpdateUser = ({ username, email }) => {
+    const errors = {};
 
+    const emailError = validateEmail(email);
+    if (emailError) errors.email = emailError;
+
+    const usernameError = validateUsername(username);
+    if (usernameError) errors.username = usernameError;
+
+
+
+    return errors;
+};
 
