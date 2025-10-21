@@ -14,13 +14,14 @@ export const validateUsername = (username) => {
     if (username.length < 3) return "Debe tener al menos 3 caracteres";
     const regex = /^[a-zA-Z0-9_]+$/;
     if (!regex.test(username)) return "Solo se permiten letras, números y guiones bajos";
+
     return null;
 };
 
 // Validación de contraseña
 export const validatePassword = (password) => {
     if (!password) return "La contraseña es obligatoria";
-    if (password.length <= 7) return "Debe tener al menos 8 caracteres";
+    if (password.length <= 7) return "Debe tener al menos 7 caracteres";
     return null;
 };
 
@@ -33,5 +34,16 @@ export const validateRegisterUser = ({ username, email, password }) => {
     errors.username = validateUsername(username);
     errors.password = validatePassword(password);
     Object.keys(errors).forEach(key => errors[key] === null && delete errors[key]);
+    return errors;
+};
+export const validateLoginUser = ({ email, password }) => {
+    const errors = {};
+
+    const emailError = validateEmail(email);
+    if (emailError) errors.email = emailError;
+
+    const passwordError = validatePassword(password);
+    if (passwordError) errors.password = passwordError;
+
     return errors;
 };

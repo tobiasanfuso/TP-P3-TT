@@ -2,7 +2,7 @@ import { Users } from '../Models/Users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";
-import { validateRegisterUser } from '../helpers/validations.js';
+import { validateRegisterUser, validateLoginUser } from '../helpers/validations.js';
 dotenv.config();
 export const register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -52,6 +52,11 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+
+        const errors = validateLoginUser({ email, password });
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({ errors });
+        }
         //buscar usuario por email
         const user = await Users.findOne({ where: { email } });
 
