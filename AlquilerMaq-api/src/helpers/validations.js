@@ -47,3 +47,11 @@ export const validateLoginUser = ({ email, password }) => {
 
     return errors;
 };
+
+// Validar rol
+export const validateRole = (role) => {
+    const allowedRoles = ["customer", "admin", "sysadmin"];
+    if (!role) return "El rol es obligatorio";
+    if (!allowedRoles.includes(role)) return `Rol inválido. Los permitidos son: ${allowedRoles.join(", ")}`;
+    return null;
+};
