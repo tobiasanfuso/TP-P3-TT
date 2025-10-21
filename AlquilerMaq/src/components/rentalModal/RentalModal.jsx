@@ -3,6 +3,7 @@ import { Spinner } from "react-bootstrap";
 import "./RentalModal.css";
 import { AuthenticationContext } from "../service/auth/auth.context";
 import { validateRentalForm } from "../rentalModal/validateRentalForm";
+import { toast } from "react-toastify";
 
 const RentalRequestModal = ({ product, onClose }) => {
   const { token } = useContext(AuthenticationContext);
@@ -64,9 +65,10 @@ const RentalRequestModal = ({ product, onClose }) => {
       onClose();
       setErrors({ fechaInicio: "", fechaFin: "" });
     } catch (error) {
-      setMessage({ type: "error", text: error.message });
+      toast.error({ type: "error", text: error.message });
     } finally {
       setLoading(false);
+      toast.success("Alquiler añadido con éxito");
     }
   };
 

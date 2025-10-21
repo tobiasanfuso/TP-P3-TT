@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import { useContext } from "react";
 import { AuthenticationContext } from "../service/auth/auth.context";
+import { toast } from "react-toastify";
+
 const NewProduct = ({ show, onSave, onClose }) => {
   const { token } = useContext(AuthenticationContext);
   const [nombre, setNombre] = useState("");
@@ -105,7 +107,7 @@ const NewProduct = ({ show, onSave, onClose }) => {
       onSave();
       handleCloseAndReset();
     } catch (err) {
-      setErrorMsg("❌ No se pudo guardar la máquina");
+      toast.error("No se pudo guardar la máquina");
       console.error(err.message);
     } finally {
       setLoading(false);
