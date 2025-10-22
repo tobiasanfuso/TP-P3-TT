@@ -17,7 +17,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="not-found-page">
+    <div className="not-found-page min-vh-100 d-flex align-items-center py-5">
       <Container fluid className="h-100">
         <Row className="h-100 align-items-center justify-content-center">
           <Col xs={12} md={8} lg={6} className="text-center">
