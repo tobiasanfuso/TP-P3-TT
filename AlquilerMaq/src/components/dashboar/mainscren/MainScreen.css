@@ -49,6 +49,28 @@
   padding-bottom: .5rem;
 }
 
+/* barra de herramientas full width */
+.toolbar{ width: 100%; }
+
+/* inputs con borde sutil y altura cómoda */
+.search-input,
+.filter-select{
+  height: 44px;
+  border: 1px solid var(--line, #e9ecef);
+  border-radius: 12px;
+  box-shadow: none;
+}
+.search-input:focus,
+.filter-select:focus{
+  border-color: var(--brand, #0d6efd);
+  box-shadow: 0 0 0 .18rem rgba(13,110,253,.12);
+}
+
+/* en desktop ambos suman 12 columnas; sin límite de ancho */
+@media (min-width: 768px){
+  .filter-select{ max-width: none; }
+}
+
 /* aparicion sutil de cards*/
 .products-grid > [class*="col-"]{
   animation: fadeUp .35s ease both;

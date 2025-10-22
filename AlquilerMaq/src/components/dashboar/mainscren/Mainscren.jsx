@@ -149,7 +149,7 @@ const MainScreen = () => {
 
   const handleAddProduct = () => {
     setUpdateTrigger((prev) => prev + 1);
-    toast.success("Producto agregado ✅", { toastId: "product-add-ok" });
+    toast.success("Producto agregado", { toastId: "product-add-ok" });
   };
 
   const handleCancelDelete = async () => {
@@ -202,27 +202,29 @@ const MainScreen = () => {
         onClose={() => setIsModalOpen(false)}
       />
 
-      <Row>
-        <Col>
-          <Form.Control
-            className="mb-4"
-            type="text"
-            placeholder="Buscar producto..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Col>
-        <Col>
-          <Form.Select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            style={{ maxWidth: 150 }}
-          >
-            <option value="az">Nombre: A-Z</option>
-            <option value="za">Nombre: Z-A</option>
-          </Form.Select>
-        </Col>
-      </Row>
+      <Row className="g-2 toolbar mb-4">
+  <Col xs={12} md={8}>
+    <Form.Control
+      className="search-input"
+      type="text"
+      placeholder="Buscar producto..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </Col>
+
+  <Col xs={12} md={4}>
+    <Form.Select
+      className="filter-select"
+      value={sortOrder}
+      onChange={(e) => setSortOrder(e.target.value)}
+    >
+      <option value="az">Nombre: A-Z</option>
+      <option value="za">Nombre: Z-A</option>
+    </Form.Select>
+  </Col>
+</Row>
+
 
       <Row className="g-4 products-grid">
         {loadingProduct ? (
