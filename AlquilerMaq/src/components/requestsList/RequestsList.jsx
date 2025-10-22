@@ -167,7 +167,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                         >
                           {req.estado}
                         </Dropdown.Toggle>
-                        <Dropdown.Menu container={document.body}>
+                        <Dropdown.Menu>
                           {estados.map((opt) => (
                             <Dropdown.Item
                               key={opt.value}
@@ -177,8 +177,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
                               active={req.estado === opt.value}
                             >
                               <Badge
-                                bg="light"
-                                className="text-capitalize text-black w-100"
+                                className="status-badge text-capitalize w-100"
                                 data-state={opt.value}
                               >
                                 {opt.label}

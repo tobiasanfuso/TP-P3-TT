@@ -68,13 +68,21 @@
   color: currentColor;
 }
 
-/* dropdown prolijo */
+/* dropdown prolijo + animación sutil */
 .dropdown-menu{
   border-radius: 12px;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm, 0 4px 12px rgba(0,0,0,.06));
   padding: .35rem;
+  opacity: 0;
+  transform: translateY(4px) scale(.98);
+  transform-origin: top center;
 }
+.dropdown-menu.show{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
 .dropdown-item{
   border-radius: 10px;
   padding: .25rem .5rem;
@@ -90,9 +98,16 @@
 
 /* pill base */
 .status-badge{
-  display: inline-flex; align-items: center; gap: .4ch;
-  padding: .25rem .6rem; border-radius: 999px;
-  font-size: .8rem; font-weight: 600; line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; 
+  gap: .4ch;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;       
   border: 1px solid var(--st-neutral-br) !important;
   color: var(--st-neutral-text) !important;
   background: var(--st-neutral-bg) !important;
@@ -120,7 +135,6 @@
   border-color: var(--st-proc-br) !important;
 }
 
-
 .dropdown-menu .status-badge[data-state="pendiente"]{
   color: var(--st-pend-text) !important;
   background: var(--st-pend-bg) !important;
@@ -146,7 +160,7 @@
 /* íconos clickeables */
 .estado-toggle, .trash-icon { cursor: pointer !important; }
 
-/* responsive fino */
+/* responsive */
 @media (max-width: 576px){
   .request-item { padding: .85rem 1rem; }
 }
@@ -154,4 +168,5 @@
 /* accesibilidad */
 @media (prefers-reduced-motion: reduce){
   .fade-up, .request-item { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .dropdown-menu { transition: none !important; }
 }
