@@ -371,7 +371,9 @@ REACT_APP_JWT_SECRET=tu_clave_secreta_jwt_aqui
 - La interfaz es completamente responsive y accesible
 
 ## 👥 Contribuidores
-
+Felipe Sbuttoni ( felipesbuttoni )  
+Tobías Anfuso ( tobiasanfuso ) 
+Agustín Reymundez ( AgusRey04 ) 
 ---
 
 **AlquiMaq S.R.L** - Sistema de gestión de alquiler de máquinas de construcción
