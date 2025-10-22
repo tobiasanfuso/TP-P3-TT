@@ -1,0 +1,27 @@
+.product-modal-img {
+    max-height: 300px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.product-modal-text p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+
+}
+
+@media (max-width: 576.98px) {
+    .modal-dialog {
+        margin: 1rem;
+        /* más espacio en móviles */
+    }
+
+    .product-modal-img {
+        max-height: 200px;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+}

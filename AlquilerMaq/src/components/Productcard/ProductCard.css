@@ -1,19 +1,22 @@
-.product-card{
-  border: 1px solid var(--line, #e9ecef);  
+.product-card {
+  border: 1px solid var(--line, #e9ecef);
   border-radius: 16px;
   background: #fff;
-  background-clip: padding-box;            
-  box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  background-clip: padding-box;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
   overflow: hidden;
   transition: transform .2s ease, box-shadow .3s ease, border-color .2s ease;
   margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.product-card:hover{
+.product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
   border-color: var(--line-strong, #dde2e7);
 }
+
 .product-img {
   width: 100%;
   height: 200px;
@@ -23,16 +26,39 @@
 }
 
 .product-card:hover .product-img {
-  transform: scale(1.1); 
-  object-fit: contain;  
-  background-color: #fff; 
+  transform: scale(1.1);
+  object-fit: contain;
+  background-color: #fff;
 }
 
 .card-body {
   padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  /* fuerza que todas tengan la misma altura */
 }
+
 .card-title {
   color: #2c3e50;
+  font-size: 1.1rem;
+  height: 2.5rem;
+  /* altura fija del título */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-text {
+  height: 3rem;
+  /* altura máxima de la descripción */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* mostrar máximo 2 líneas */
+  -webkit-box-orient: vertical;
 }
 
 .btn {
@@ -41,24 +67,23 @@
   transition: all 0.2s ease;
 }
 
-.btn-outline-primary:hover { background-color: #0d6efd; color: #fff; }
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
+}
 
-.product-actions { align-items: stretch; }
-
-.placeholder-btn {
-  height: 32px;
-  border-radius: 12px;
-  display: inline-block;
+.product-actions {
+  align-items: stretch;
 }
 
 /* móvil: apila los buttons */
 @media (max-width: 576.98px) {
-  .product-actions { 
-    flex-direction: column; 
+  .product-actions {
+    flex-direction: column;
     gap: .5rem;
   }
+
   .product-actions .btn {
     width: 100%;
   }
 }
-
