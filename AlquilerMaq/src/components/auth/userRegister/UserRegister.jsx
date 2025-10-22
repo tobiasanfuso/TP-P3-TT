@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
-import { Card, Row, Button, Form, Alert, InputGroup } from "react-bootstrap";
+import { Card, Row, Button, Form, Alert, InputGroup, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./UserRegister.css";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { validateRegisterUser } from "../../utils/validation";
 import { toast } from "react-toastify";
+
 const UserRegister = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +25,7 @@ const UserRegister = () => {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+  const [loading, setLoading] = useState(false);
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     setErrors({ ...errors, email: "" });
@@ -61,6 +63,7 @@ const UserRegister = () => {
       else if (newErrors.username) usernameRef.current.focus();
       else if (newErrors.password) passwordRef.current.focus();
       else if (newErrors.confirmPassword) confirmPasswordRef.current.focus();
+      setLoading(false);
       return false;
     }
 
@@ -69,6 +72,8 @@ const UserRegister = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
     if (!validate()) return;
 
     try {
@@ -85,10 +90,11 @@ const UserRegister = () => {
         toast.error(errData?.message || "No se pudo registrar", {
           toastId: "register-error",
         });
+        setLoading(false);
         return;
       }
 
-      toast.success("¡Registro existoso! ;)", {toastId: "register-ok"})
+      toast.success("¡Registro existoso! ;)", { toastId: "register-ok" })
       setEmail("");
       setUserName("");
       setPassword("");
@@ -110,6 +116,8 @@ const UserRegister = () => {
       toast.error("Error en el servidor, intente más tarde", {
         toastId: "register-network",
       })
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,14 +198,31 @@ const UserRegister = () => {
             </Form.Group>
             {errors.backend && <Alert variant="danger">{errors.backend}</Alert>}
             <div className="d-flex justify-content-between mt-3 gap-2">
-              <Button variant="secondary" type="submit">
-                Registrarse
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={loading}
+                className="btn-login"
+                aria-busy={loading}
+              >
+                {loading && (
+                  <Spinner
+                    as="span"
+                    size="sm"
+                    animation="border"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                )}
+                <span className="btn-label">Registrarse</span>
               </Button>
 
               <Button
                 type="button"
                 variant="outline-secondary"
                 onClick={() => navigate("/login")}
+                disabled={loading}
               >
                 Iniciar sesión
               </Button>

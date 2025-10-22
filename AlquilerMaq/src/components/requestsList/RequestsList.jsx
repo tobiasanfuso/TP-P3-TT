@@ -83,7 +83,7 @@ const RequestsList = ({ title, apiEndpoint, allowEdit }) => {
         }
       );
       if (!res.ok) throw new Error("No se pudo borrar la solicitud");
-      setMessage("Solicitud borrada correctamente");
+      toast.success("Solicitud borrada correctamente");
       setReload((prev) => !prev);
     } catch (err) {
       setMessage(err.message);

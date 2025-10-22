@@ -17,10 +17,6 @@ const MainLayout = ({ children }) => {
     navigate("/login");
   };
 
-  const handleProfile = () => {
-    alert(`Perfil de ${currentUser}`);
-  };
-
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar bg="light" expand="lg" className="fixed-top shadow-sm">
