@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Button, Form, Table, Alert } from "react-bootstrap";
+import "./userManagement.css"
 import LoadingUsers from "../loadingUsers/LoadingUsers";
 import EditUserModal from "../UserManagement/EditUserModal";
 import { AuthenticationContext } from "../service/auth/auth.context";
@@ -144,7 +145,7 @@ const UserManagement = ({ user }) => {
       })
       .then(() => {
         setReload((prev) => prev + 1);
-        toast.success("Usuario eliminado con éxito")
+        toast.success("Usuario eliminado con éxito");
       })
       .catch((err) => {
         toast.error(err.message || "Error al eliminar usuario");
@@ -183,12 +184,12 @@ const UserManagement = ({ user }) => {
   };
 
   return (
-    <div>
-      <h4 className="mt-4">Gestión de Usuarios</h4>
+    <section className="user-mgmt page-hero fade-up">
+      <h4 className="user-title">Gestión de Usuarios</h4>
       {message && <Alert variant="info">{message}</Alert>}
 
       {user.role === "sysadmin" && (
-        <Form className="d-flex flex-wrap gap-2 mb-3">
+        <Form className="user-form d-flex flex-wrap gap-2 mb-3">
           <Form.Control
             name="username"
             placeholder="Usuario"
@@ -236,7 +237,8 @@ const UserManagement = ({ user }) => {
       {loading ? (
         <LoadingUsers role={user.role} />
       ) : (
-        <Table striped bordered hover>
+        <div className="user-table table-responsive">
+        <Table striped bordered hover className="mb-0">
           <thead>
             <tr>
               <th>Usuario</th>
@@ -280,6 +282,7 @@ const UserManagement = ({ user }) => {
             ))}
           </tbody>
         </Table>
+        </div>
       )}
 
       {/* Modal de Edición */}
@@ -289,7 +292,7 @@ const UserManagement = ({ user }) => {
         onClose={() => setShowEditModal(false)}
         onSave={handleSave}
       />
-    </div>
+    </section>
   );
 };
 
