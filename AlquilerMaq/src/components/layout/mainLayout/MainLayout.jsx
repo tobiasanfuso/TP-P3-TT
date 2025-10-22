@@ -17,10 +17,6 @@ const MainLayout = ({ children }) => {
     navigate("/login");
   };
 
-  const handleProfile = () => {
-    alert(`Perfil de ${currentUser}`);
-  };
-
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar bg="light" expand="lg" className="fixed-top shadow-sm">
@@ -65,7 +61,6 @@ const MainLayout = ({ children }) => {
 
               <Dropdown.Menu className="user-menu" flip>
                 <Dropdown.Header>{currentUser}</Dropdown.Header>
-                <Dropdown.Item onClick={handleProfile}>Ver perfil</Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={handleLogout} className="text-danger">
                   Cerrar sesión

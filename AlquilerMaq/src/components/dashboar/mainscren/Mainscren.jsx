@@ -205,6 +205,7 @@ const MainScreen = () => {
       <Row>
         <Col>
           <Form.Control
+            className="mb-4"
             type="text"
             placeholder="Buscar producto..."
             value={searchTerm}

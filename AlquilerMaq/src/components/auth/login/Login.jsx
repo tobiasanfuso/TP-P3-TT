@@ -1,6 +1,6 @@
 import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Form, Button, Row, FormGroup, Alert } from "react-bootstrap";
+import { Card, Form, Button, Row, FormGroup, Alert, Spinner } from "react-bootstrap";
 import "./Login.css";
 import { AuthenticationContext } from "../../service/auth/auth.context";
 import { validateLoginUser } from "../../utils/validation"; // mismas validaciones del backend
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 const Login = () => {
   const { handleLoginUser } = useContext(AuthenticationContext);
 
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
@@ -39,6 +40,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+
     setErrors({
       email: "",
       password: "",
@@ -56,6 +60,7 @@ const Login = () => {
 
       if (validationErrors.email) emailRef.current.focus();
       else if (validationErrors.password) passwordRef.current.focus();
+      setLoading(false);
       return;
     }
 
@@ -87,6 +92,8 @@ const Login = () => {
         notFunction: "Error al conectar con el servidor",
       }));
       console.error("Error de login:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,6 +118,7 @@ const Login = () => {
                 ref={emailRef}
                 value={email}
                 onChange={handleEmailChange}
+                disabled={loading}
                 className={errors.email ? "border border-danger" : ""}
               />
               {errors.email && (
@@ -126,6 +134,7 @@ const Login = () => {
                 ref={passwordRef}
                 value={password}
                 onChange={handlePasswordChange}
+                disabled={loading}
                 className={errors.password ? "border border-danger" : ""}
               />
               {errors.password && (
@@ -147,11 +156,23 @@ const Login = () => {
                 variant="outline-secondary"
                 type="button"
                 onClick={() => navigate("/register")}
+                disabled={loading}
               >
                 Registrarse
               </Button>
-              <Button variant="secondary" type="submit">
-                Iniciar sesión
+
+              <Button className="btn-login" variant="primary" type="submit" disabled={loading}>
+                { loading ? (
+                  <>
+                  <Spinner as="span" size="sm" animation="border" role="status" aria-hidden="true" className="me-2">
+                    <span className="btn-label"></span>
+                  </Spinner>
+                  </>
+                  ) : (
+                    <span className="btn-label">Iniciar Sesión</span>
+                  )
+                }
+                
               </Button>
             </div>
           </Form>
